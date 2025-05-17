@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+httpx
+feedparser
+yfinance
+pandas
+scikit-learn
+alpha_vantage
