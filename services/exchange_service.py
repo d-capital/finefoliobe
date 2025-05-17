@@ -5,7 +5,7 @@ from datetime import datetime
 import yfinance as yf
 from alpha_vantage.foreignexchange import ForeignExchange
 import os
-api_key = os.environ.get('ALPHA_VANTAGE_API_KEY') 
+api_key = "XMDZ2D8X1N9NR1TZ"
 fx = ForeignExchange(key=api_key, output_format='pandas')
 
 import os
@@ -220,8 +220,14 @@ def prepare_data_for_regression(first_currency:str,second_currency:str):
     ir_inf_u_s_currency.index = pd.to_datetime(ir_inf_u_s_currency.index,format="%d.%m.%Y")
     ir_inf_u_gdp_s_currency = pd.merge_asof(ir_inf_u_s_currency.sort_index(), df_gdp_s_currency_f.sort_index(), left_index=True, right_index=True)
 
+    full_index = ir_inf_u_gdp_f_currency.index.union(ir_inf_u_gdp_s_currency.index).sort_values()
+    df1_full = ir_inf_u_gdp_f_currency.reindex(full_index)
+    df2_full = ir_inf_u_gdp_s_currency.reindex(full_index)
+    df1_ffill = df1_full.ffill()
+    df2_ffill = df2_full.ffill()
     #MERGE BOTH CURRENCIES
-    econ_data = pd.merge_asof(ir_inf_u_gdp_f_currency.sort_index(), ir_inf_u_gdp_s_currency.sort_index(), left_index=True, right_index=True)
+    #econ_data = pd.merge_asof(ir_inf_u_gdp_f_currency.sort_index(), ir_inf_u_gdp_s_currency.sort_index(), left_index=True, right_index=True)
+    econ_data = pd.concat([df1_ffill, df2_ffill], axis=1)
 
     #LOAD EXCHANGE RATE
     ticker = first_currency.upper() + second_currency.upper() + '=X'
