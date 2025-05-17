@@ -76,19 +76,28 @@ def get_exchange_rate(ticker: str):
 
         forecasted_regression_rate = round(float(result.iloc[-1]['exchange_rate']) + float(y_pred[-1]),5)
         current_rate = round(float(result.iloc[-1]['exchange_rate']),5)
+        fc_ir = float(get_interest_rates(first_currency)['actual'].iloc[-1])
+        fc_infr = float(get_inflation_rates(first_currency)['actual'].iloc[-1])
+        fc_ur= float(get_unemployment_rates(first_currency)['actual'].iloc[-1])
+        fc_gdp= float(get_gdp_rates(first_currency)['actual'].iloc[-1])
+
+        sc_ir = float(get_interest_rates(second_currency)['actual'].iloc[-1])
+        sc_infr = float(get_inflation_rates(second_currency)['actual'].iloc[-1])
+        sc_ur= float(get_unemployment_rates(second_currency)['actual'].iloc[-1])
+        sc_gdp= float(get_gdp_rates(second_currency)['actual'].iloc[-1])
 
         return ExchangeRate(
             rate = current_rate,
             first_currency_short_code=first_currency,
-            first_currency_interest_rate = float(result.iloc[-1]['fcurr_ir']),
-            first_currency_inflation_rate = float(result.iloc[-1]['fcurr_inf']),
-            first_currency_unemployment_rate = float(result.iloc[-1]['fcurr_gdp']),
-            first_currency_gdp_growth_rate = 0.0,
+            first_currency_interest_rate = fc_ir,
+            first_currency_inflation_rate = fc_infr,
+            first_currency_unemployment_rate = fc_ur,
+            first_currency_gdp_growth_rate = fc_gdp,
             second_currency_short_code = second_currency,
-            second_currency_interest_rate = float(result.iloc[-1]['scurr_ir']),
-            second_currency_inflation_rate = float(result.iloc[-1]['scurr_inf']),
-            second_currency_unemployment_rate = float(result.iloc[-1]['scurr_unem']),
-            second_currency_gdp_growth_rate = float(result.iloc[-1]['scurr_gdp']),
+            second_currency_interest_rate = sc_ir,
+            second_currency_inflation_rate = sc_infr,
+            second_currency_unemployment_rate = sc_ur,
+            second_currency_gdp_growth_rate = sc_gdp,
             forecast_regression = forecasted_regression_rate,
             forecast_ppp = round(float(result.iloc[-1]['ppp_avg']),5),
             recommendation = "sell" if current_rate > forecasted_regression_rate else "buy" 
