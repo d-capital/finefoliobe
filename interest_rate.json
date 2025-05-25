@@ -16036,7 +16036,20 @@
       "revision": null,
       "is_active": false,
       "is_most_recent": true
-    }
+    },
+    {
+      "id": 141339,
+      "dateline": 1747715400,
+      "date": "May 2025",
+      "actual_formatted": "3.85%",
+      "actual": 3.85,
+      "forecast_formatted": "3.85%",
+      "forecast": 3.85,
+      "revision_formatted": null,
+      "revision": null,
+      "is_active": true,
+      "is_most_recent": true
+  }
   ],
   "cad": [
     {

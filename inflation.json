@@ -7125,6 +7125,19 @@
             "revision": null,
             "is_active": false,
             "is_most_recent": true
+        },
+        {
+            "id": 145124,
+            "dateline": 1747744200,
+            "date": "May 2025",
+            "actual_formatted": "-0.1%",
+            "actual": -0.1,
+            "forecast_formatted": "-0.1%",
+            "forecast": -0.1,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
+            "is_most_recent": true
         }
     ],
     "gbp": [
@@ -10299,6 +10312,19 @@
             "revision": null,
             "is_active": false,
             "is_most_recent": true
+        },
+        {
+            "id": 143591,
+            "dateline": 1747807200,
+            "date": "May 2025",
+            "actual_formatted": "3.5%",
+            "actual": 3.5,
+            "forecast_formatted": "3.3%",
+            "forecast": 3.3,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
+            "is_most_recent": true
         }
     ],
     "eur": [
@@ -13472,6 +13498,19 @@
             "revision_formatted": null,
             "revision": null,
             "is_active": false,
+            "is_most_recent": true
+        },
+        {
+            "id": 145386,
+            "dateline": 1747645200,
+            "date": "May 2025",
+            "actual_formatted": "2.2%",
+            "actual": 2.2,
+            "forecast_formatted": "2.2%",
+            "forecast": 2.2,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
             "is_most_recent": true
         }
     ],
