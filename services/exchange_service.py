@@ -100,7 +100,7 @@ def get_exchange_rate(ticker: str):
             second_currency_gdp_growth_rate = sc_gdp,
             forecast_regression = forecasted_regression_rate,
             forecast_ppp = round(float(result.iloc[-1]['ppp_avg']),5),
-            recommendation = "sell" if current_rate > forecasted_regression_rate else "buy" 
+            recommendation = "sell" if float(y_test.iloc[-1]) > float(y_pred[-1]) else "buy" 
         )
     return None
 
