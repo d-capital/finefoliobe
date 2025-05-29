@@ -40,7 +40,7 @@ def get_exchange_rate(ticker: str):
         data['fcurr_ir'] = data['fcurr_ir'].diff(1)
         data['fcurr_inf'] = data['fcurr_inf'].diff(1)
         data['fcurr_unem'] = data['fcurr_unem'].diff(1)
-        #data['fcurr_gdp'] = data['fcurr_gdp'].diff(1)
+        data['fcurr_gdp'] = data['fcurr_gdp'].diff(1)
 
         data['scurr_ir'] = data['scurr_ir'].diff(1)
         data['scurr_inf'] = data['scurr_inf'].diff(1)
@@ -48,7 +48,7 @@ def get_exchange_rate(ticker: str):
         data['scurr_ir'] = data['scurr_ir'].diff(1)
         data['scurr_inf'] = data['scurr_inf'].diff(1)
         data['scurr_unem'] = data['scurr_unem'].diff(1)
-        #data['scurr_gdp'] = data['scurr_gdp'].diff(1)
+        data['scurr_gdp'] = data['scurr_gdp'].diff(1)
 
         data = data.dropna()  # Drop rows again after shifting
 
@@ -235,8 +235,8 @@ def prepare_data_for_regression(first_currency:str,second_currency:str):
     df1_ffill = df1_full.ffill()
     df2_ffill = df2_full.ffill()
     #MERGE BOTH CURRENCIES
-    #econ_data = pd.merge_asof(ir_inf_u_gdp_f_currency.sort_index(), ir_inf_u_gdp_s_currency.sort_index(), left_index=True, right_index=True)
-    econ_data = pd.concat([df1_ffill, df2_ffill], axis=1)
+    econ_data = pd.merge_asof(ir_inf_u_gdp_f_currency.sort_index(), ir_inf_u_gdp_s_currency.sort_index(), left_index=True, right_index=True)
+    #econ_data = pd.concat([df1_ffill, df2_ffill], axis=1)
 
     #LOAD EXCHANGE RATE
     ticker = first_currency.upper() + second_currency.upper() + '=X'
@@ -244,7 +244,7 @@ def prepare_data_for_regression(first_currency:str,second_currency:str):
     
     #rate, meta_data = fx.get_currency_exchange_daily(from_symbol=first_currency.upper(), to_symbol=second_currency.upper(), outputsize='full')
     rate = rate['Close'][ticker].to_frame()
-    rate = rate.rename(columns={'4. close':'exchange_rate'})
+    rate = rate.rename(columns={ticker:'exchange_rate'})
     data = pd.merge_asof(econ_data.sort_index(), rate.sort_index(),left_index=True,right_index=True)
 
     data = data.reset_index()
