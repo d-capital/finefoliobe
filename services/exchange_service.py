@@ -5,7 +5,7 @@ from datetime import datetime
 import yfinance as yf
 from alpha_vantage.foreignexchange import ForeignExchange
 import os
-api_key = "XMDZ2D8X1N9NR1TZ"
+api_key = os.environ.get('ALPHA_VANTAGE_API_KEY') 
 fx = ForeignExchange(key=api_key, output_format='pandas')
 
 import os
@@ -85,7 +85,7 @@ def get_exchange_rate(ticker: str):
         sc_infr = float(get_inflation_rates(second_currency)['actual'].iloc[-1])
         sc_ur= float(get_unemployment_rates(second_currency)['actual'].iloc[-1])
         sc_gdp= float(get_gdp_rates(second_currency)['actual'].iloc[-1])
-
+        print("actual rate "+ str(y_test.iloc[-1]) + "; predicted " + str(y_pred[-1]))
         return ExchangeRate(
             rate = current_rate,
             first_currency_short_code=first_currency,
@@ -240,10 +240,10 @@ def prepare_data_for_regression(first_currency:str,second_currency:str):
 
     #LOAD EXCHANGE RATE
     ticker = first_currency.upper() + second_currency.upper() + '=X'
-    #rate = yf.download(ticker,start='2000-03-22',end='2025-05-10')
+    rate = yf.download(ticker,start='2000-03-22',end='2025-05-10')
     
-    rate, meta_data = fx.get_currency_exchange_daily(from_symbol=first_currency.upper(), to_symbol=second_currency.upper(), outputsize='full')
-    #rate = rate['Close'][ticker].to_frame()
+    #rate, meta_data = fx.get_currency_exchange_daily(from_symbol=first_currency.upper(), to_symbol=second_currency.upper(), outputsize='full')
+    rate = rate['Close'][ticker].to_frame()
     rate = rate.rename(columns={'4. close':'exchange_rate'})
     data = pd.merge_asof(econ_data.sort_index(), rate.sort_index(),left_index=True,right_index=True)
 
