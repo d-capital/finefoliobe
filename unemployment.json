@@ -22408,6 +22408,32 @@
             "revision": null,
             "is_active": true,
             "is_most_recent": true
+        },
+        {
+            "id": 144275,
+            "dateline": 1746142200,
+            "date": "May 2025",
+            "actual_formatted": "2.5%",
+            "actual": 2.5,
+            "forecast_formatted": "2.4%",
+            "forecast": 2.4,
+            "revision_formatted": "",
+            "revision": null,
+            "is_active": false,
+            "is_most_recent": false
+        },
+        {
+            "id": 144276,
+            "dateline": 1748561400,
+            "date": "May 2025",
+            "actual_formatted": "2.5%",
+            "actual": 2.5,
+            "forecast_formatted": "2.5%",
+            "forecast": 2.5,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
+            "is_most_recent": true
         }
     ],
     "nzd": [

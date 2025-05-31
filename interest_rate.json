@@ -12459,6 +12459,19 @@
       "revision": null,
       "is_active": true,
       "is_most_recent": true
+    },
+    {
+      "id": 141366,
+      "dateline": 1748397600,
+      "date": "May 2025",
+      "actual_formatted": "3.25%",
+      "actual": 3.25,
+      "forecast_formatted": "3.25%",
+      "forecast": 3.25,
+      "revision_formatted": null,
+      "revision": null,
+      "is_active": true,
+      "is_most_recent": true
     }
   ],
   "aud": [
@@ -16049,7 +16062,7 @@
       "revision": null,
       "is_active": true,
       "is_most_recent": true
-  }
+    }
   ],
   "cad": [
     {
