@@ -9200,6 +9200,19 @@
             "revision": null,
             "is_active": true,
             "is_most_recent": true
+        },
+        {
+            "id": 141618,
+            "dateline": 1749000600,
+            "date": "Jun 3, 2025",
+            "actual_formatted": "0.2%",
+            "actual": 0.2,
+            "forecast_formatted": "0.4%",
+            "forecast": 0.4,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
+            "is_most_recent": true
         }
     ],
     "nzd": [

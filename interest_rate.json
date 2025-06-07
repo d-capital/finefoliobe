@@ -3743,6 +3743,19 @@
       "revision": null,
       "is_active": false,
       "is_most_recent": true
+    },
+    {
+      "id": 142933,
+      "dateline": 1749125700,
+      "date": "Jun 2025",
+      "actual_formatted": "2.15%",
+      "actual": 2.15,
+      "forecast_formatted": "2.15%",
+      "forecast": 2.15,
+      "revision_formatted": null,
+      "revision": null,
+      "is_active": true,
+      "is_most_recent": true
     }
   ],
   "gbp": [
@@ -18689,6 +18702,19 @@
       "revision_formatted": null,
       "revision": null,
       "is_active": false,
+      "is_most_recent": true
+    },
+    {
+      "id": 141389,
+      "dateline": 1749044700,
+      "date": "Jun 2025",
+      "actual_formatted": "2.75%",
+      "actual": 2.75,
+      "forecast_formatted": "2.75%",
+      "forecast": 2.75,
+      "revision_formatted": null,
+      "revision": null,
+      "is_active": true,
       "is_most_recent": true
     }
   ],

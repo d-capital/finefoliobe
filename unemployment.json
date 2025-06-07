@@ -3964,6 +3964,19 @@
             "revision": null,
             "is_active": false,
             "is_most_recent": true
+        },
+        {
+            "id": 142582,
+            "dateline": 1749213000,
+            "date": "Jun 2025",
+            "actual_formatted": "4.2%",
+            "actual": 4.2,
+            "forecast_formatted": "4.2%",
+            "forecast": 4.2,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
+            "is_most_recent": true
         }
     ],
     "cad": [
@@ -7927,6 +7940,19 @@
             "actual": 6.9,
             "forecast_formatted": "6.8%",
             "forecast": 6.8,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
+            "is_most_recent": true
+        },
+        {
+            "id": 144985,
+            "dateline": 1749213000,
+            "date": "Jun 2025",
+            "actual_formatted": "7.0%",
+            "actual": 7,
+            "forecast_formatted": "7.0%",
+            "forecast": 7,
             "revision_formatted": null,
             "revision": null,
             "is_active": true,
