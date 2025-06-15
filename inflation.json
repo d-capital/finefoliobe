@@ -3535,6 +3535,19 @@
             "revision": null,
             "is_active": true,
             "is_most_recent": true
+        },
+        {
+            "id": 142648,
+            "dateline": 1749645000,
+            "date": "Jun 2025",
+            "actual_formatted": "2.4%",
+            "actual": 2.4,
+            "forecast_formatted": "2.5%",
+            "forecast": 2.5,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
+            "is_most_recent": true
         }
     ],
     "cad": [

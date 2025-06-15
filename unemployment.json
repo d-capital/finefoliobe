@@ -14539,6 +14539,19 @@
             "revision": null,
             "is_active": true,
             "is_most_recent": true
+        },
+        {
+            "id": 143791,
+            "dateline": 1749535200,
+            "date": "Jun 2025",
+            "actual_formatted": "4.6%",
+            "actual": 4.6,
+            "forecast_formatted": "4.6%",
+            "forecast": 4.6,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
+            "is_most_recent": true
         }
     ],
     "eur": [
