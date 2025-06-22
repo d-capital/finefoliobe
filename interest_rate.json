@@ -7307,7 +7307,20 @@
       "revision": null,
       "is_active": true,
       "is_most_recent": true
-    }
+    },
+    {
+    "id": 143353,
+    "dateline": 1750330800,
+    "date": "Jun 2025",
+    "actual_formatted": "4.25%",
+    "actual": 4.25,
+    "forecast_formatted": "4.25%",
+    "forecast": 4.25,
+    "revision_formatted": null,
+    "revision": null,
+    "is_active": true,
+    "is_most_recent": true
+}
   ],
   "usd": [
     {
@@ -9940,6 +9953,19 @@
       "id": 141209,
       "dateline": 1746640800,
       "date": "May 2025",
+      "actual_formatted": "4.50%",
+      "actual": 4.5,
+      "forecast_formatted": "4.50%",
+      "forecast": 4.5,
+      "revision_formatted": null,
+      "revision": null,
+      "is_active": true,
+      "is_most_recent": true
+    },
+    {
+      "id": 141210,
+      "dateline": 1750269600,
+      "date": "Jun 2025",
       "actual_formatted": "4.50%",
       "actual": 4.5,
       "forecast_formatted": "4.50%",
@@ -19706,6 +19732,19 @@
       "revision": null,
       "is_active": false,
       "is_most_recent": true
+    },
+    {
+      "id": 144307,
+      "dateline": 1750131000,
+      "date": "Jun 2025",
+      "actual_formatted": "<0.50%",
+      "actual": 0.5,
+      "forecast_formatted": "<0.50%",
+      "forecast": 0.5,
+      "revision_formatted": null,
+      "revision": null,
+      "is_active": true,
+      "is_most_recent": true
     }
   ],
   "chf": [
@@ -20016,6 +20055,19 @@
       "actual": 0.25,
       "forecast_formatted": "0.25%",
       "forecast": 0.25,
+      "revision_formatted": null,
+      "revision": null,
+      "is_active": true,
+      "is_most_recent": true
+    },
+    {
+      "id": 140836,
+      "dateline": 1750318200,
+      "date": "Jun 19, 2025",
+      "actual_formatted": "0.00%",
+      "actual": 0,
+      "forecast_formatted": "0.00%",
+      "forecast": 0,
       "revision_formatted": null,
       "revision": null,
       "is_active": true,

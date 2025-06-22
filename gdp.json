@@ -10528,6 +10528,19 @@
             "revision": null,
             "is_active": true,
             "is_most_recent": true
+        },
+        {
+            "id": 144812,
+            "dateline": 1750286700,
+            "date": "Jun 18, 2025",
+            "actual_formatted": "0.8%",
+            "actual": 0.8,
+            "forecast_formatted": "0.7%",
+            "forecast": 0.7,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
+            "is_most_recent": true
         }
     ],
     "chf": [

@@ -10572,6 +10572,19 @@
             "revision": null,
             "is_active": true,
             "is_most_recent": true
+        },
+        {
+            "id": 144173,
+            "dateline": 1750296600,
+            "date": "Jun 2025",
+            "actual_formatted": "4.1%",
+            "actual": 4.1,
+            "forecast_formatted": "4.1%",
+            "forecast": 4.1,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
+            "is_most_recent": true
         }
     ],
     "gbp": [
