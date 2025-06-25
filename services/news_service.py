@@ -10,7 +10,3 @@ def get_news():
         news_dict.append(news_feed.entries[i])
     news_to_return = { 'news': news_dict}
     return(news_to_return)
-    return [
-        NewsItem(id=1, headline='Global Markets', content='Markets remain volatile amid economic uncertainty.'),
-        NewsItem(id=2, headline='Energy Prices', content='Oil prices climb due to supply cuts.')
-    ]

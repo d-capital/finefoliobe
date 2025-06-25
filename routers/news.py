@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from models.news import NewsItem
-from news_service import get_news
+from services.news_service import get_news
 
 router = APIRouter()
 
