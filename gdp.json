@@ -5255,6 +5255,19 @@
             "revision": null,
             "is_active": true,
             "is_most_recent": true
+        },
+        {
+            "id": 143763,
+            "dateline": 1751263200,
+            "date": "Jun 30, 2025",
+            "actual_formatted": "0.7%",
+            "actual": 0.7,
+            "forecast_formatted": "0.7%",
+            "forecast": 0.7,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
+            "is_most_recent": true
         }
     ],
     "eur": [

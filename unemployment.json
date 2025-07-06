@@ -3977,6 +3977,19 @@
             "revision": null,
             "is_active": true,
             "is_most_recent": true
+        },
+        {
+            "id": 142583,
+            "dateline": 1751545800,
+            "date": "Jul 2025",
+            "actual_formatted": "4.1%",
+            "actual": 4.1,
+            "forecast_formatted": "4.3%",
+            "forecast": 4.3,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
+            "is_most_recent": true
         }
     ],
     "cad": [
@@ -18519,6 +18532,19 @@
             "revision": null,
             "is_active": false,
             "is_most_recent": true
+        },
+        {
+            "id": 145398,
+            "dateline": 1751446800,
+            "date": "Jul 2025",
+            "actual_formatted": "6.3%",
+            "actual": 6.3,
+            "forecast_formatted": "6.2%",
+            "forecast": 6.2,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
+            "is_most_recent": true
         }
     ],
     "jpy": [
@@ -26428,6 +26454,19 @@
             "revision_formatted": null,
             "revision": null,
             "is_active": false,
+            "is_most_recent": true
+        },
+        {
+            "id": 140794,
+            "dateline": 1751612400,
+            "date": "Jul 2025",
+            "actual_formatted": "2.9%",
+            "actual": 2.9,
+            "forecast_formatted": "2.9%",
+            "forecast": 2.9,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
             "is_most_recent": true
         }
     ]

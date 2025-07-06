@@ -19305,6 +19305,19 @@
             "revision": null,
             "is_active": true,
             "is_most_recent": true
+        },
+        {
+            "id": 140734,
+            "dateline": 1751524200,
+            "date": "Jul 2025",
+            "actual_formatted": "0.2%",
+            "actual": 0.2,
+            "forecast_formatted": "0.1%",
+            "forecast": 0.1,
+            "revision_formatted": null,
+            "revision": null,
+            "is_active": true,
+            "is_most_recent": true
         }
     ]
 }
