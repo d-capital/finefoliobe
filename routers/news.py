@@ -4,6 +4,6 @@ from services.news_service import get_news
 
 router = APIRouter()
 
-@router.get("/", response_model=list[NewsItem])
+@router.get("/")
 def list_news():
     return get_news()

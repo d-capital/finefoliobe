@@ -7,6 +7,7 @@ from alpha_vantage.foreignexchange import ForeignExchange
 import os
 api_key = os.environ.get('ALPHA_VANTAGE_API_KEY') 
 fx = ForeignExchange(key=api_key, output_format='pandas')
+from db.session import DATABASE_URL
 
 import os
 import json
@@ -76,15 +77,15 @@ def get_exchange_rate(ticker: str):
 
         forecasted_regression_rate = round(float(result.iloc[-1]['exchange_rate']) + float(y_pred[-1]),5)
         current_rate = round(float(result.iloc[-1]['exchange_rate']),5)
-        fc_ir = float(get_interest_rates(first_currency)['actual'].iloc[-1])
-        fc_infr = float(get_inflation_rates(first_currency)['actual'].iloc[-1])
-        fc_ur= float(get_unemployment_rates(first_currency)['actual'].iloc[-1])
-        fc_gdp= float(get_gdp_rates(first_currency)['actual'].iloc[-1])
+        fc_ir = float(get_macro_series(first_currency,'ir')['actual'].iloc[-1])
+        fc_infr = float(get_macro_series(first_currency,'inf')['actual'].iloc[-1])
+        fc_ur= float(get_macro_series(first_currency,'une')['actual'].iloc[-1])
+        fc_gdp= float(get_macro_series(first_currency,'gdp')['actual'].iloc[-1])
 
-        sc_ir = float(get_interest_rates(second_currency)['actual'].iloc[-1])
-        sc_infr = float(get_inflation_rates(second_currency)['actual'].iloc[-1])
-        sc_ur= float(get_unemployment_rates(second_currency)['actual'].iloc[-1])
-        sc_gdp= float(get_gdp_rates(second_currency)['actual'].iloc[-1])
+        sc_ir = float(get_macro_series(second_currency,'ir')['actual'].iloc[-1])
+        sc_infr = float(get_macro_series(second_currency, 'inf')['actual'].iloc[-1])
+        sc_ur= float(get_macro_series(second_currency, 'une')['actual'].iloc[-1])
+        sc_gdp= float(get_macro_series(second_currency,'gdp')['actual'].iloc[-1])
         print("actual rate "+ str(y_test.iloc[-1]) + "; predicted " + str(y_pred[-1]))
         return ExchangeRate(
             rate = current_rate,
@@ -104,38 +105,9 @@ def get_exchange_rate(ticker: str):
         )
     return None
 
-
-def get_interest_rates(country: str) -> list:
-    path:str = os.getcwd() + "/interest_rate.json"
-    with open(path, 'r') as j:
-        data:list = json.load(j)
-        interest_rates = data[country]
-        df_ir = pd.DataFrame.from_records(interest_rates)
-        return df_ir
-    
-def get_inflation_rates(country: str) -> list:
-    path:str = os.getcwd() + "/inflation.json"
-    with open(path, 'r') as j:
-        data:list = json.load(j)
-        interest_rates = data[country]
-        df_ir = pd.DataFrame.from_records(interest_rates)
-        return df_ir
-    
-def get_unemployment_rates(country: str) -> list:
-    path:str = os.getcwd() + "/unemployment.json"
-    with open(path, 'r') as j:
-        data:list = json.load(j)
-        interest_rates = data[country]
-        df_ir = pd.DataFrame.from_records(interest_rates)
-        return df_ir
-    
-def get_gdp_rates(country: str) -> list:
-    path:str = os.getcwd() + "/gdp.json"
-    with open(path, 'r') as j:
-        data:list = json.load(j)
-        interest_rates = data[country]
-        df_ir = pd.DataFrame.from_records(interest_rates)
-        return df_ir
+def get_macro_series(country: str, event_type: str) -> pd.DataFrame:
+    df_ir = pd.read_sql(f"SELECT * FROM macroevent WHERE country = '{country}' AND event_type = '{event_type}'", DATABASE_URL)
+    return df_ir
     
 
 def format_date_reg(df: pd.DataFrame):
@@ -149,28 +121,28 @@ def prepare_data_for_regression(first_currency:str,second_currency:str):
 
     #FIRST CURRENCY
     #interest rate
-    df_ir_f_currency = get_interest_rates(first_currency)
+    df_ir_f_currency = get_macro_series(first_currency, 'ir')
     format_date_reg(df_ir_f_currency)
     df_ir_f_currency = df_ir_f_currency.set_index('date')
     df_ir_f_currency_f = df_ir_f_currency[['actual']]
     df_ir_f_currency_f = df_ir_f_currency_f.rename(columns={'actual':'fcurr_ir'})
 
     #inflation rate
-    df_inf_f_currency = get_inflation_rates(first_currency)
+    df_inf_f_currency = get_macro_series(first_currency, 'inf')
     format_date_reg(df_inf_f_currency)
     df_inf_f_currency = df_inf_f_currency.set_index('date')
     df_inf_f_currency_f = df_inf_f_currency[['actual']]
     df_inf_f_currency_f = df_inf_f_currency_f.rename(columns={'actual':'fcurr_inf'})
 
     #unemployment
-    df_u_f_currency = get_unemployment_rates(first_currency)
+    df_u_f_currency = get_macro_series(first_currency,'une')
     format_date_reg(df_u_f_currency)
     df_u_f_currency = df_u_f_currency.set_index('date')
     df_u_f_currency_f = df_u_f_currency[['actual']]
     df_u_f_currency_f = df_u_f_currency_f.rename(columns={'actual':'fcurr_unem'})
 
     #GDP
-    df_gdp_f_currency = get_gdp_rates(first_currency)
+    df_gdp_f_currency = get_macro_series(first_currency, 'gdp')
     format_date_reg(df_gdp_f_currency)
     df_gdp_f_currency = df_gdp_f_currency.set_index('date')
     df_gdp_f_currency_f = df_gdp_f_currency[['actual']]
@@ -178,28 +150,28 @@ def prepare_data_for_regression(first_currency:str,second_currency:str):
 
     #SECOND CURRENCY
     #interest rate
-    df_ir_s_currency = get_interest_rates(second_currency)
+    df_ir_s_currency = get_macro_series(second_currency,'ir')
     format_date_reg(df_ir_s_currency)
     df_ir_s_currency = df_ir_s_currency.set_index('date')
     df_ir_s_currency_f = df_ir_s_currency[['actual']]
     df_ir_s_currency_f = df_ir_s_currency_f.rename(columns={'actual':'scurr_ir'})
 
     #inflation rate
-    df_inf_s_currency = get_inflation_rates(second_currency)
+    df_inf_s_currency = get_macro_series(second_currency,'inf')
     format_date_reg(df_inf_s_currency)
     df_inf_s_currency = df_inf_s_currency.set_index('date')
     df_inf_s_currency_f = df_inf_s_currency[['actual']]
     df_inf_s_currency_f = df_inf_s_currency_f.rename(columns={'actual':'scurr_inf'})
 
     #unemployment
-    df_u_s_currency = get_unemployment_rates(second_currency)
+    df_u_s_currency = get_macro_series(second_currency,'une')
     format_date_reg(df_u_s_currency)
     df_u_s_currency = df_u_s_currency.set_index('date')
     df_u_s_currency_f = df_u_s_currency[['actual']]
     df_u_s_currency_f = df_u_s_currency_f.rename(columns={'actual':'scurr_unem'})
 
     #GDP
-    df_gdp_s_currency = get_gdp_rates(second_currency)
+    df_gdp_s_currency = get_macro_series(second_currency, 'gdp')
     format_date_reg(df_gdp_s_currency)
     df_gdp_s_currency = df_gdp_s_currency.set_index('date')
     df_gdp_s_currency_f = df_gdp_s_currency[['actual']]
@@ -237,10 +209,11 @@ def prepare_data_for_regression(first_currency:str,second_currency:str):
     #MERGE BOTH CURRENCIES
     econ_data = pd.merge_asof(ir_inf_u_gdp_f_currency.sort_index(), ir_inf_u_gdp_s_currency.sort_index(), left_index=True, right_index=True)
     #econ_data = pd.concat([df1_ffill, df2_ffill], axis=1)
-
+    today = datetime.today()
+    today = datetime.strftime(today,'%Y-%m-%d')
     #LOAD EXCHANGE RATE
     ticker = first_currency.upper() + second_currency.upper() + '=X'
-    rate = yf.download(ticker,start='2000-03-22',end='2025-05-10')
+    rate = yf.download(ticker,start='2000-03-22',end=today)
     
     #rate, meta_data = fx.get_currency_exchange_daily(from_symbol=first_currency.upper(), to_symbol=second_currency.upper(), outputsize='full')
     rate = rate['Close'][ticker].to_frame()

@@ -1,14 +1,14 @@
 from fastapi import APIRouter, HTTPException,  Depends
-from models.macro_event import MacroEvent
+from models.country import Country, CountriesRequest
 from db.session import get_session
 from sqlmodel import Session
 from repositories.macrodata import MacroDataRepository
 
 router = APIRouter()
 
-@router.get("/{event}/{country}", response_model=list[MacroEvent])
-def macro_data(event: str, country:str, session: Session = Depends(get_session)):
-    result = MacroDataRepository(session).get_event_by_type_and_country(country=country,type=event)
+@router.post("/",response_model=list[Country])
+def countries(countries:CountriesRequest, session: Session = Depends(get_session)):
+    result = MacroDataRepository(session).get_countries_last_events(countries.codes)
     if not result:
         raise HTTPException(status_code=404, detail="Macro event for the given country was not found.")
     return result

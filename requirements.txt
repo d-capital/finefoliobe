@@ -6,3 +6,7 @@ yfinance
 pandas
 scikit-learn
 alpha_vantage
+sqlmodel
+psycopg2-binary
+investpy
+APScheduler
