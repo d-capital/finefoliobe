@@ -46,7 +46,7 @@ def update():
             data.at[i, 'event'] = 'GDP (YoY)'
         if is_rate_change_event(event_name):
             data.at[i, 'event'] = 'Interest Rate'
-        if event_name.startswith('Trade Balance'):
+        if event_name.startswith('Trade Balance (YoY)'):
             data.at[i, 'event'] = 'Trade Balance'
     #filter out events that match events that we need by country and even name
     needed_events = data[data['event'].isin(eventlist)]
