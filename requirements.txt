@@ -10,3 +10,4 @@ sqlmodel
 psycopg2-binary
 investpy
 APScheduler
+tradingview-screener

@@ -2,6 +2,8 @@ import yfinance as yf
 from models.valuation_result import ValuationResult, Valuation, StockInfo, NetProfitHistory, AverageGrowth
 import requests
 import pandas as pd
+from tradingview_screener import Query, col
+import time
 
 def get_cik_from_ticker(ticker: str) -> str:
     ticker = ticker.upper()
@@ -73,26 +75,89 @@ def calculate_average_growth(history: list[NetProfitHistory]) -> AverageGrowth:
         fiveYears=round(five_years_growth*100,2)
     )
 
+def safe_float(val):
+    return float(val) if val is not None else None
+
 def get_valuation(exchange:str, ticker: str) -> ValuationResult:
-    stock = yf.Ticker(ticker=ticker)
-    stockInfo: StockInfo = StockInfo(
-        name=stock.info.get("shortName"),
-        ticker=ticker,
-        exchange=exchange,
-        price=stock.info.get("previousClose"),
-        country=stock.info.get("country"),
-        capitalization=float(stock.info.get("marketCap")),
-        sector=stock.info.get("sector"),
-        industry=stock.info.get("industry"),
-        epsTtm=stock.info.get("epsTrailingTwelveMonths"),
-        peTtm=stock.info.get("trailingPE"),
-        dividendYield=stock.info.get("dividendYield")
+    stockInfo = None
+    max_retries = 2
+    # --- Try Yahoo Finance ---
+    retries = 0
+    while retries < max_retries and stockInfo is None:
+        try:
+            stock_yf = yf.Ticker(ticker)
+            info = stock_yf.info
+
+            # Sometimes .info is empty even if no exception is raised
+            if info and "shortName" in info:
+                stockInfo = StockInfo(
+                    name=info.get("shortName"),
+                    ticker=ticker,
+                    exchange=exchange,
+                    price=safe_float(info.get("previousClose")),
+                    country=info.get("country"),
+                    capitalization=safe_float(info.get("marketCap")),
+                    sector=info.get("sector"),
+                    industry=info.get("industry"),
+                    epsTtm=safe_float(info.get("epsTrailingTwelveMonths")),
+                    peTtm=safe_float(info.get("trailingPE")),
+                    dividendYield=safe_float(info.get("dividendYield")),
+                )
+                break
+        except Exception as e:
+            retries += 1
+            time.sleep(1.5 * retries)  # exponential backoff
+
+    # --- Fallback to TradingView ---
+    if stockInfo is None:
+        df = (
+            Query()
+            .select(
+                "name",
+                "description",
+                "exchange",
+                "close",
+                "country",
+                "market_cap_basic",
+                "sector",
+                "industry",
+                "earnings_per_share_basic_ttm",
+                "price_earnings_ttm",
+                "dividends_yield",
+            )
+            .where(col("name") == ticker)
+            .get_scanner_data()
         )
+
+        row = df[1].iloc[0]
+
+        stockInfo = StockInfo(
+            name=row["description"],
+            ticker=row["ticker"],
+            exchange=row["exchange"],
+            price=safe_float(row["close"]),
+            country=row["country"],
+            capitalization=safe_float(row["market_cap_basic"]),
+            sector=row["sector"],
+            industry=row["industry"],
+            epsTtm=safe_float(row["earnings_per_share_basic_ttm"]),
+            peTtm=safe_float(row["price_earnings_ttm"]),
+            dividendYield=safe_float(row["dividends_yield"]) * 100
+            if row["dividends_yield"] is not None
+            else None,
+        )
+
     netProfitHistory = get_net_income(ticker)
     averageGrowth: AverageGrowth = calculate_average_growth(netProfitHistory)
-    fairPrice = averageGrowth.fiveYears* stockInfo.epsTtm
+    if averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
+        fairPrice = averageGrowth.fiveYears* stockInfo.epsTtm
+    else:
+        fairPrice = None
     explanationText = f"{stockInfo.epsTtm} x {averageGrowth.fiveYears} = {fairPrice}"
-    resultPercent = round((fairPrice/stockInfo.price)-1,2)*100
+    if averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
+        resultPercent = round((fairPrice/stockInfo.price)-1,2)*100
+    else:
+        resultPercent = 0.0
     resultLabel = "Overvalued"
     if(resultPercent>0):
         resultLabel = "Undervalued"
