@@ -91,6 +91,7 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
     netProfitHistory = get_net_income(ticker)
     averageGrowth: AverageGrowth = calculate_average_growth(netProfitHistory)
     fairPrice = averageGrowth.fiveYears* stockInfo.epsTtm
+    explanationText = f"{stockInfo.epsTtm} x {averageGrowth.fiveYears} = {fairPrice}"
     resultPercent = round((fairPrice/stockInfo.price)-1,2)*100
     resultLabel = "Overvalued"
     if(resultPercent>0):
@@ -101,7 +102,7 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
         fairPrice=fairPrice,
         resultPercent=resultPercent,
         resultLabel=resultLabel,
-        formula="",
+        formula=explanationText,
         explanation="",
         netProfitHistory=netProfitHistory,
         avgGrowth=averageGrowth)
