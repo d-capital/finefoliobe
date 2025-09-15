@@ -29,7 +29,7 @@ class Valuation(BaseModel):
     resultLabel: Optional[str] = None
     formula: Optional[str] = None
     explanation: Optional[str] = None
-    netProfitHistory:list[NetProfitHistory] = None
+    netProfitHistory:Optional[list[NetProfitHistory]] = None
     avgGrowth: Optional[AverageGrowth] = None
 
 class ValuationResult(BaseModel):

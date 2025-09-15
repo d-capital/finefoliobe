@@ -14,37 +14,67 @@ def get_cik_from_ticker(ticker: str) -> str:
     for item in mapping.values():  # iterate over dict values
         if item['ticker'].upper() == ticker:
             return str(item['cik_str']).zfill(10)
-    raise ValueError(f"Ticker {ticker} not found in SEC mapping.")
+    print(f"Ticker {ticker} not found in SEC mapping.")
+    return None
 
 
 def get_net_income(ticker: str) -> list[NetProfitHistory]:
-    cik = get_cik_from_ticker(ticker)  
-    url = f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
-    headers = {"User-Agent": "Your Name Contact@example.com"}
-    data = requests.get(url, headers=headers).json()
+    cik = get_cik_from_ticker(ticker)
+    if  cik is not None: 
+        url = f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
+        headers = {"User-Agent": "Your Name Contact@example.com"}
+        try:
+            data = requests.get(url, headers=headers).json()
+            if "facts" in data and "us-gaap" in data["facts"]:
+                if "NetIncomeLoss" in data["facts"]["us-gaap"]:
+                    # Extract Net Income (US-GAAP: NetIncomeLoss)
+                    facts = data["facts"]["us-gaap"]["NetIncomeLoss"]["units"]["USD"]
 
-    # Extract Net Income (US-GAAP: NetIncomeLoss)
-    facts = data["facts"]["us-gaap"]["NetIncomeLoss"]["units"]["USD"]
+                    # Convert to DataFrame
+                    df = pd.DataFrame(facts)
+                    df = df[["fy", "fp", "end", "val"]]
+                    df = df[df["fp"] == "FY"]   # only full year reports
 
-    # Convert to DataFrame
-    df = pd.DataFrame(facts)
-    df = df[["fy", "fp", "end", "val"]]
-    df = df[df["fp"] == "FY"]   # only full year reports
+                    # Keep the latest report for each year
+                    df = df.sort_values(["fy", "end"], ascending=[False, False])
+                    df = df.groupby("fy").first().reset_index()
 
-    # Keep the latest report for each year
-    df = df.sort_values(["fy", "end"], ascending=[False, False])
-    df = df.groupby("fy").first().reset_index()
+                    # Keep last 6 years
+                    df = df.sort_values("fy", ascending=False).head(6)
+                    df = df.sort_values("fy", ascending=True)  # ascending for consistency
 
-    # Keep last 6 years
-    df = df.sort_values("fy", ascending=False).head(6)
-    df = df.sort_values("fy", ascending=True)  # ascending for consistency
+                    # Convert to list of NetProfitHistory
+                    return [
+                        NetProfitHistory(year=int(row.fy), value=float(row.val))
+                        for row in df.itertuples(index=False)
+                    ]
+                else:
+                    return None
+            else:
+                return None
+        except requests.exceptions.JSONDecodeError:
+            return None
+    else:
+        return None
+    
+def get_net_income_from_file(ticker: str, exchange: str) -> list[NetProfitHistory]:
+    net_profits = pd.read_csv('net_income_nyse_nasdaq.csv')
+    net_profits_for_ticker = net_profits[(net_profits['tickers'] == ticker) & (net_profits['exchange'] == exchange)]
 
-    # Convert to list of NetProfitHistory
-    return [
-        NetProfitHistory(year=int(row.fy), value=float(row.val))
-        for row in df.itertuples(index=False)
-    ]
+    if net_profits_for_ticker.empty:
+        return None
 
+    row = net_profits_for_ticker.iloc[0]  # get the first (and probably only) row
+    result: list[NetProfitHistory] = []
+
+    # Iterate over columns that are years
+    for column in net_profits_for_ticker.columns:
+        if column.isdigit():  # only process year columns
+            value = row[column]
+            if pd.notna(value):  # skip NaN values
+                result.append(NetProfitHistory(year=int(column), value=float(value)))
+
+    return result
 
 def calculate_average_growth(history: list[NetProfitHistory]) -> AverageGrowth:
     # ensure chronological order
@@ -70,9 +100,9 @@ def calculate_average_growth(history: list[NetProfitHistory]) -> AverageGrowth:
     five_years_growth = (sum(yoy_growths[-5:]) / 5) if len(yoy_growths) >= 5 else None
 
     return AverageGrowth(
-        ttm=round(ttm_growth*100,2),
-        threeYears=round(three_years_growth*100,2),
-        fiveYears=round(five_years_growth*100,2)
+        ttm=round(ttm_growth*100,2) if ttm_growth is not None else None,
+        threeYears=round(three_years_growth*100,2) if three_years_growth is not None else None,
+        fiveYears=round(five_years_growth*100,2) if five_years_growth is not None else None
     )
 
 def safe_float(val):
@@ -147,14 +177,21 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
             else None,
         )
 
-    netProfitHistory = get_net_income(ticker)
-    averageGrowth: AverageGrowth = calculate_average_growth(netProfitHistory)
-    if averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
+    netProfitHistory = get_net_income_from_file(ticker, exchange)
+    print(ticker)
+    if netProfitHistory is not None and len(netProfitHistory)>=5:
+        averageGrowth: AverageGrowth = calculate_average_growth(netProfitHistory)
+    else:
+        averageGrowth: AverageGrowth = None
+    if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
         fairPrice = averageGrowth.fiveYears* stockInfo.epsTtm
     else:
         fairPrice = None
-    explanationText = f"{stockInfo.epsTtm} x {averageGrowth.fiveYears} = {fairPrice}"
-    if averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
+    if averageGrowth is not None:
+        explanationText = f"{stockInfo.epsTtm} x {averageGrowth.fiveYears} = {fairPrice}"
+    else:
+        explanationText = ""
+    if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
         resultPercent = round((fairPrice/stockInfo.price)-1,2)*100
     else:
         resultPercent = 0.0
