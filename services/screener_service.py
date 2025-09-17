@@ -48,21 +48,21 @@ def get_screener(screenerFilters:ScreenerFilter) -> list[ScreenerResult]:
                 company=el['description'],
                 ticker=el['name'],
                 result= valuation_result[2], #result of valuation - overvalued / undervalued + percentage
-                fairPrice=valuation_result[1], #fair value price
-                pegTtm=el['price_earnings_growth_ttm'],
-                netIncomeGrowthTtm=valuation_result[0].ttm,
-                netIncomeGrowth3y=valuation_result[0].threeYears,
-                netIncomeGrowth5y=valuation_result[0].fiveYears,
-                netIncomeGrowthNext1y=valuation_result[0].threeYears,
-                netIncomeGrowthNext3y=valuation_result[0].fiveYears,
-                freeCashFlow=el['free_cash_flow'],
-                deFy=el['debt_to_equity'],
-                dividendYield=el['dividends_yield'],
-                peTtm=el['price_earnings_ttm'],
-                forwardPe=el['price_earnings_forward_fy'],
-                price=el['close'],
+                fairPrice=safe_float_round(valuation_result[1]), #fair value price
+                pegTtm=safe_float_round(el['price_earnings_growth_ttm']),
+                netIncomeGrowthTtm=safe_float_round(valuation_result[0].ttm),
+                netIncomeGrowth3y=safe_float_round(valuation_result[0].threeYears),
+                netIncomeGrowth5y=safe_float_round(valuation_result[0].fiveYears),
+                netIncomeGrowthNext1y=safe_float_round(valuation_result[0].threeYears),
+                netIncomeGrowthNext3y=safe_float_round(valuation_result[0].fiveYears),
+                freeCashFlow=safe_float_round(el['free_cash_flow']),
+                deFy=safe_float_round(el['debt_to_equity']),
+                dividendYield=safe_float_round(el['dividends_yield']),
+                peTtm=safe_float_round(el['price_earnings_ttm']),
+                forwardPe=safe_float_round(el['price_earnings_forward_fy']),
+                price=safe_float_round(el['close']),
                 type=get_lynch_company_type(valuation_result[0]), 
-                marketCap=el['market_cap_basic'],
+                marketCap=safe_float_round(el['market_cap_basic']),
                 sector=el['sector'],
                 industry=el['industry'],
                 country=el['country']
@@ -74,20 +74,20 @@ def get_screener(screenerFilters:ScreenerFilter) -> list[ScreenerResult]:
                 ticker=el['name'],
                 result= None, #result of valuation - overvalued / undervalued + percentage
                 fairPrice=None, #fair value price
-                pegTtm=el['price_earnings_growth_ttm'],
+                pegTtm=safe_float_round(el['price_earnings_growth_ttm']),
                 netIncomeGrowthTtm=None,
                 netIncomeGrowth3y=None,
                 netIncomeGrowth5y=None,
                 netIncomeGrowthNext1y=None,
                 netIncomeGrowthNext3y=None,
-                freeCashFlow=el['free_cash_flow'],
-                deFy=el['debt_to_equity'],
-                dividendYield=el['dividends_yield'],
-                peTtm=el['price_earnings_ttm'],
-                forwardPe=el['price_earnings_forward_fy'],
-                price=el['close'],
+                freeCashFlow=safe_float_round(el['free_cash_flow']),
+                deFy=safe_float_round(el['debt_to_equity']),
+                dividendYield=safe_float_round(el['dividends_yield']),
+                peTtm=safe_float_round(el['price_earnings_ttm']),
+                forwardPe=safe_float_round(el['price_earnings_forward_fy']),
+                price=safe_float_round(el['close']),
                 type=None,
-                marketCap=el['market_cap_basic'],
+                marketCap=safe_float_round(el['market_cap_basic']),
                 sector=el['sector'],
                 industry=el['industry'],
                 country=el['country']
@@ -127,3 +127,7 @@ def get_short_valuation_results(netProfitHistory, epsTtm, price):
     else:
         resultLabel = "Overvalued"
     return averageGrowth, fairPrice, resultLabel, resultPercent
+
+
+def safe_float_round(val):
+    return round(float(val),2) if val is not None else None
