@@ -23,12 +23,13 @@ def get_screener(screenerFilters:ScreenerFilter) -> list[ScreenerResult]:
                 'debt_to_equity',
                 'free_cash_flow',
                 'earnings_per_share_forecast_next_fq',
-                'close')
+                'close'
+                )
         .where(
             col('market_cap_basic').between(0, 5_000_000_000),
-            col('price_earnings_ttm') <= 25,
+            col('price_earnings_ttm') <= screenerFilters.maxPe,
             col('eps_diluted_growth_percent_fy')>15,
-            col('dividends_yield')>=0,
+            col('dividends_yield')>=screenerFilters.minDividend,
             col('price_earnings_growth_ttm')<1.2,
             col('debt_to_equity')<0.5,
             col('free_cash_flow')>0,
@@ -65,7 +66,8 @@ def get_screener(screenerFilters:ScreenerFilter) -> list[ScreenerResult]:
                 marketCap=safe_float_round(el['market_cap_basic']),
                 sector=el['sector'],
                 industry=el['industry'],
-                country=el['country']
+                country=el['country'],
+                exchange=el['exchange']
             )
         else:
             new_result = ScreenerResult(
@@ -90,7 +92,8 @@ def get_screener(screenerFilters:ScreenerFilter) -> list[ScreenerResult]:
                 marketCap=safe_float_round(el['market_cap_basic']),
                 sector=el['sector'],
                 industry=el['industry'],
-                country=el['country']
+                country=el['country'],
+                exchange=el['exchange']
             )
         screener_results.append(new_result)
 

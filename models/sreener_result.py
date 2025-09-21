@@ -24,3 +24,4 @@ class ScreenerResult(BaseModel):
     sector: Optional[str] = None
     industry: Optional[str] = None
     country: Optional[str] = None
+    exchange: Optional[str] = None
