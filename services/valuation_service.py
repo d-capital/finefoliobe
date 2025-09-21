@@ -110,35 +110,6 @@ def safe_float(val):
 
 def get_valuation(exchange:str, ticker: str) -> ValuationResult:
     stockInfo = None
-    max_retries = 2
-    # --- Try Yahoo Finance ---
-    retries = 0
-    while retries < max_retries and stockInfo is None:
-        try:
-            stock_yf = yf.Ticker(ticker)
-            info = stock_yf.info
-
-            # Sometimes .info is empty even if no exception is raised
-            if info and "shortName" in info:
-                stockInfo = StockInfo(
-                    name=info.get("shortName"),
-                    ticker=ticker,
-                    exchange=exchange,
-                    price=safe_float(info.get("previousClose")),
-                    country=info.get("country"),
-                    capitalization=safe_float(info.get("marketCap")),
-                    sector=info.get("sector"),
-                    industry=info.get("industry"),
-                    epsTtm=safe_float(info.get("epsTrailingTwelveMonths")),
-                    peTtm=safe_float(info.get("trailingPE")),
-                    dividendYield=safe_float(info.get("dividendYield")),
-                )
-                break
-        except Exception as e:
-            retries += 1
-            time.sleep(1.5 * retries)  # exponential backoff
-
-    # --- Fallback to TradingView ---
     if stockInfo is None:
         df = (
             Query()
