@@ -143,7 +143,7 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
             industry=row["industry"],
             epsTtm=safe_float(row["earnings_per_share_basic_ttm"]),
             peTtm=safe_float(row["price_earnings_ttm"]),
-            dividendYield=safe_float(row["dividends_yield"]) * 100
+            dividendYield=safe_float(row["dividends_yield"])
             if row["dividends_yield"] is not None
             else None,
         )
@@ -159,11 +159,11 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
     else:
         fairPrice = None
     if averageGrowth is not None:
-        explanationText = f"{stockInfo.epsTtm} x {averageGrowth.fiveYears} = {fairPrice}"
+        explanationText = f"{round(stockInfo.epsTtm,2)} x {round(averageGrowth.fiveYears,2)} = {round(fairPrice,2)}"
     else:
         explanationText = ""
     if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
-        resultPercent = round((fairPrice/stockInfo.price)-1,2)*100
+        resultPercent = round((round(fairPrice,2)/round(stockInfo.price,2))*100,2)
     else:
         resultPercent = 0.0
     resultLabel = "Overvalued"
