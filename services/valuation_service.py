@@ -163,7 +163,7 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
     else:
         explanationText = ""
     if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
-        resultPercent = round((round(fairPrice,2)/round(stockInfo.price,2))*100,2)
+        resultPercent = round(((round(fairPrice,2)-round(stockInfo.price,2))/round(stockInfo.price,2))*100,2)
     else:
         resultPercent = 0.0
     resultLabel = "Overvalued"
@@ -171,6 +171,10 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
         resultLabel = "Undervalued"
     else:
         resultLabel = "Overvalued"
+    peg=1
+    if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.peTtm is not None:
+        peg = round(stockInfo.peTtm/averageGrowth.fiveYears,2)
+
     valuation = Valuation(
         fairPrice=fairPrice,
         resultPercent=resultPercent,
@@ -178,6 +182,8 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
         formula=explanationText,
         explanation="",
         netProfitHistory=netProfitHistory,
-        avgGrowth=averageGrowth)
+        avgGrowth=averageGrowth,
+        peg=peg
+        )
     result  = ValuationResult(stockInfo=stockInfo, valuation=valuation)
     return result

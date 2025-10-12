@@ -31,6 +31,7 @@ class Valuation(BaseModel):
     explanation: Optional[str] = None
     netProfitHistory:Optional[list[NetProfitHistory]] = None
     avgGrowth: Optional[AverageGrowth] = None
+    peg: Optional[float] = None
 
 class ValuationResult(BaseModel):
     stockInfo:StockInfo
