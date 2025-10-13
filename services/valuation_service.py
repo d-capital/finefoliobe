@@ -73,7 +73,7 @@ def get_net_income_from_file(ticker: str, exchange: str) -> list[NetProfitHistor
             value = row[column]
             if pd.notna(value):  # skip NaN values
                 result.append(NetProfitHistory(year=int(column), value=float(value)))
-
+    result.sort(key=lambda r: r.year)
     return result
 
 def calculate_average_growth(history: list[NetProfitHistory]) -> AverageGrowth:
