@@ -92,13 +92,18 @@ def calculate_average_growth(history: list[NetProfitHistory]) -> AverageGrowth:
 
     # last year's YoY growth (TTM)
     ttm_growth = yoy_growths[-1] if len(yoy_growths) >= 1 else None
+    #ttm_cagr = calculate_cagr(history[-2].value, history[-1].value, 1) if len(yoy_growths) >= 1 else None
+    #ttm_growth = ttm_cagr
 
     # average of last 3 YoY growths
     three_years_growth = (sum(yoy_growths[-3:]) / 3) if len(yoy_growths) >= 3 else None
+    #three_years_cagr = calculate_cagr(history[-3].value ,history[-1].value, 3) if len(yoy_growths) >= 3 else None
+    #three_years_growth = three_years_cagr
 
     # average of last 5 YoY growths
-    five_years_growth = (sum(yoy_growths[-5:]) / 5) if len(yoy_growths) >= 5 else None
-
+    five_years_growth = (sum(yoy_growths[-5:]) / 5) if len(yoy_growths) >= 4 else None
+    #five_years_cagr = calculate_cagr(history[-5].value, history[-1].value, 5) if len(yoy_growths) >= 4 else None
+    #five_years_growth = five_years_cagr
     return AverageGrowth(
         ttm=round(ttm_growth*100,2) if ttm_growth is not None else None,
         threeYears=round(three_years_growth*100,2) if three_years_growth is not None else None,
@@ -154,12 +159,15 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
         averageGrowth: AverageGrowth = calculate_average_growth(netProfitHistory)
     else:
         averageGrowth: AverageGrowth = None
+    peg=1
+    if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.peTtm is not None:
+        peg = round(stockInfo.peTtm/averageGrowth.fiveYears,2)
     if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
-        fairPrice = averageGrowth.fiveYears* stockInfo.epsTtm
+        fairPrice = averageGrowth.fiveYears* stockInfo.epsTtm*peg
     else:
         fairPrice = None
     if averageGrowth is not None:
-        explanationText = f"{round(stockInfo.epsTtm,2)} x {round(averageGrowth.fiveYears,2)} = {round(fairPrice,2)}"
+        explanationText = f"{round(averageGrowth.fiveYears,2)} x {round(stockInfo.epsTtm,2)} x {round(peg,2)} = {round(fairPrice,2)}"
     else:
         explanationText = ""
     if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
@@ -171,9 +179,6 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
         resultLabel = "Undervalued"
     else:
         resultLabel = "Overvalued"
-    peg=1
-    if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.peTtm is not None:
-        peg = round(stockInfo.peTtm/averageGrowth.fiveYears,2)
 
     valuation = Valuation(
         fairPrice=fairPrice,
@@ -187,3 +192,22 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
         )
     result  = ValuationResult(stockInfo=stockInfo, valuation=valuation)
     return result
+
+def calculate_cagr(beginning_value, ending_value, number_of_years):
+    """
+    Calculates the Compound Annual Growth Rate (CAGR).
+
+    Args:
+    beginning_value (float): The initial value of the investment or metric.
+    ending_value (float): The final value of the investment or metric.
+    number_of_years (int or float): The number of periods (years) over which 
+                                        the growth occurred.
+
+    Returns:
+    float: The Compound Annual Growth Rate (CAGR).
+    """
+    if number_of_years <= 0:
+        raise ValueError("Number of years must be greater than zero.")
+
+    cagr = (ending_value / beginning_value) ** (1 / number_of_years) - 1
+    return cagr
