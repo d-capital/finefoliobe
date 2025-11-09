@@ -5,8 +5,8 @@ from datetime import datetime
 import yfinance as yf
 from alpha_vantage.foreignexchange import ForeignExchange
 import os
-api_key = os.environ.get('ALPHA_VANTAGE_API_KEY') 
-fx = ForeignExchange(key=api_key, output_format='pandas')
+#api_key = os.environ.get('ALPHA_VANTAGE_API_KEY') 
+#fx = ForeignExchange(key=api_key, output_format='pandas')
 from db.session import DATABASE_URL
 
 import os
