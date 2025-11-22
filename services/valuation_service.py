@@ -130,6 +130,8 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
                 "earnings_per_share_basic_ttm",
                 "price_earnings_ttm",
                 "dividends_yield",
+                "free_cash_flow_fy",
+                "debt_to_equity"
             )
             .where(col("name") == ticker)
             .get_scanner_data()
@@ -151,6 +153,12 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
             dividendYield=safe_float(row["dividends_yield"])
             if row["dividends_yield"] is not None
             else None,
+            freeCashFlow=safe_float(row["free_cash_flow_fy"]) 
+            if row["dividends_yield"] is not None
+            else None,
+            debtToEquity=safe_float(row["debt_to_equity"]) 
+            if row["dividends_yield"] is not None
+            else None
         )
 
     netProfitHistory = get_net_income_from_file(ticker, exchange)

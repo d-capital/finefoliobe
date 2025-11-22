@@ -22,6 +22,8 @@ class StockInfo(BaseModel):
     epsTtm: Optional[float] = None
     peTtm: Optional[float] = None
     dividendYield: Optional[float] = None
+    freeCashFlow: Optional[float] = None
+    debtToEquity: Optional[float] = None
 
 class Valuation(BaseModel):
     fairPrice: Optional[float] = None
