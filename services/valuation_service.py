@@ -136,72 +136,74 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
             .where(col("name") == ticker)
             .get_scanner_data()
         )
+        if len(df[1])>0:
+            row = df[1].iloc[0]
 
-        row = df[1].iloc[0]
+            stockInfo = StockInfo(
+                name=row["description"],
+                ticker=row["ticker"],
+                exchange=row["exchange"],
+                price=safe_float(row["close"]),
+                country=row["country"],
+                capitalization=safe_float(row["market_cap_basic"]),
+                sector=row["sector"],
+                industry=row["industry"],
+                epsTtm=safe_float(row["earnings_per_share_basic_ttm"]),
+                peTtm=safe_float(row["price_earnings_ttm"]),
+                dividendYield=safe_float(row["dividends_yield"])
+                if row["dividends_yield"] is not None
+                else None,
+                freeCashFlow=safe_float(row["free_cash_flow_fy"]) 
+                if row["dividends_yield"] is not None
+                else None,
+                debtToEquity=safe_float(row["debt_to_equity"]) 
+                if row["dividends_yield"] is not None
+                else None
+            )
 
-        stockInfo = StockInfo(
-            name=row["description"],
-            ticker=row["ticker"],
-            exchange=row["exchange"],
-            price=safe_float(row["close"]),
-            country=row["country"],
-            capitalization=safe_float(row["market_cap_basic"]),
-            sector=row["sector"],
-            industry=row["industry"],
-            epsTtm=safe_float(row["earnings_per_share_basic_ttm"]),
-            peTtm=safe_float(row["price_earnings_ttm"]),
-            dividendYield=safe_float(row["dividends_yield"])
-            if row["dividends_yield"] is not None
-            else None,
-            freeCashFlow=safe_float(row["free_cash_flow_fy"]) 
-            if row["dividends_yield"] is not None
-            else None,
-            debtToEquity=safe_float(row["debt_to_equity"]) 
-            if row["dividends_yield"] is not None
-            else None
-        )
+            netProfitHistory = get_net_income_from_file(ticker, exchange)
+            print(ticker)
+            if netProfitHistory is not None and len(netProfitHistory)>=5:
+                averageGrowth: AverageGrowth = calculate_average_growth(netProfitHistory)
+            else:
+                averageGrowth: AverageGrowth = None
+            peg=1
+            #if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.peTtm is not None:
+                #peg = round(stockInfo.peTtm/averageGrowth.fiveYears,2)
+                #if peg < 0.01:
+                    #peg = 1
+            if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
+                fairPrice = averageGrowth.fiveYears* stockInfo.epsTtm*peg
+            else:
+                fairPrice = None
+            if averageGrowth is not None:
+                explanationText = f"{round(averageGrowth.fiveYears,2)} x {round(stockInfo.epsTtm,2)} x 1 = {round(fairPrice,2)}"
+            else:
+                explanationText = ""
+            if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
+                resultPercent = round(((round(fairPrice,2)-round(stockInfo.price,2))/round(stockInfo.price,2))*100,2)
+            else:
+                resultPercent = 0.0
+            resultLabel = "Overvalued"
+            if(resultPercent>0):
+                resultLabel = "Undervalued"
+            else:
+                resultLabel = "Overvalued"
 
-    netProfitHistory = get_net_income_from_file(ticker, exchange)
-    print(ticker)
-    if netProfitHistory is not None and len(netProfitHistory)>=5:
-        averageGrowth: AverageGrowth = calculate_average_growth(netProfitHistory)
-    else:
-        averageGrowth: AverageGrowth = None
-    peg=1
-    #if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.peTtm is not None:
-        #peg = round(stockInfo.peTtm/averageGrowth.fiveYears,2)
-        #if peg < 0.01:
-            #peg = 1
-    if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
-        fairPrice = averageGrowth.fiveYears* stockInfo.epsTtm*peg
-    else:
-        fairPrice = None
-    if averageGrowth is not None:
-        explanationText = f"{round(averageGrowth.fiveYears,2)} x {round(stockInfo.epsTtm,2)} x 1 = {round(fairPrice,2)}"
-    else:
-        explanationText = ""
-    if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
-        resultPercent = round(((round(fairPrice,2)-round(stockInfo.price,2))/round(stockInfo.price,2))*100,2)
-    else:
-        resultPercent = 0.0
-    resultLabel = "Overvalued"
-    if(resultPercent>0):
-        resultLabel = "Undervalued"
-    else:
-        resultLabel = "Overvalued"
-
-    valuation = Valuation(
-        fairPrice=fairPrice,
-        resultPercent=resultPercent,
-        resultLabel=resultLabel,
-        formula=explanationText,
-        explanation="",
-        netProfitHistory=netProfitHistory,
-        avgGrowth=averageGrowth,
-        peg=peg
-        )
-    result  = ValuationResult(stockInfo=stockInfo, valuation=valuation)
-    return result
+            valuation = Valuation(
+                fairPrice=fairPrice,
+                resultPercent=resultPercent,
+                resultLabel=resultLabel,
+                formula=explanationText,
+                explanation="",
+                netProfitHistory=netProfitHistory,
+                avgGrowth=averageGrowth,
+                peg=peg
+                )
+            result  = ValuationResult(stockInfo=stockInfo, valuation=valuation)
+            return result
+        else:
+            return None
 
 def calculate_cagr(beginning_value, ending_value, number_of_years):
     """
