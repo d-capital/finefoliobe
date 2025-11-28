@@ -172,12 +172,16 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
                 #peg = round(stockInfo.peTtm/averageGrowth.fiveYears,2)
                 #if peg < 0.01:
                     #peg = 1
+            if averageGrowth is not None and averageGrowth.fiveYears is not None and averageGrowth.fiveYears > 25:
+                calcAvgGrowthRate = 25.00
+            else:
+                calcAvgGrowthRate = averageGrowth.fiveYears
             if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
-                fairPrice = averageGrowth.fiveYears* stockInfo.epsTtm*peg
+                fairPrice = calcAvgGrowthRate* stockInfo.epsTtm*peg
             else:
                 fairPrice = None
             if averageGrowth is not None:
-                explanationText = f"{round(averageGrowth.fiveYears,2)} x {round(stockInfo.epsTtm,2)} x 1 = {round(fairPrice,2)}"
+                explanationText = f"{round(calcAvgGrowthRate,2)} x {round(stockInfo.epsTtm,2)} x 1 = {round(fairPrice,2)}"
             else:
                 explanationText = ""
             if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
