@@ -133,6 +133,7 @@ def get_moex_stock_data(ticker:str) -> tuple:
        'market_cap_basic', 'sector', 'industry',
        'earnings_per_share_basic_ttm', 'price_earnings_ttm', 'dividends_yield',
        'free_cash_flow_fy', 'debt_to_equity', 'sector_ru', 'industry_ru'])
+    data = data[data["Ticker"]==ticker] 
     name = data.iloc[0]['Name']
     description = ''
     exchange = 'MOEX'
