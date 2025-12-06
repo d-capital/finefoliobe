@@ -19,6 +19,8 @@ class StockInfo(BaseModel):
     capitalization: Optional[float] = None
     sector: Optional[str] = None
     industry: Optional[str] = None
+    sectorRu: Optional[str] = None
+    industryRu: Optional[str] = None
     epsTtm: Optional[float] = None
     peTtm: Optional[float] = None
     dividendYield: Optional[float] = None

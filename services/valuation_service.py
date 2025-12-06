@@ -4,6 +4,7 @@ import requests
 import pandas as pd
 from tradingview_screener import Query, col
 import time
+import apimoex
 
 def get_cik_from_ticker(ticker: str) -> str:
     ticker = ticker.upper()
@@ -58,8 +59,14 @@ def get_net_income(ticker: str) -> list[NetProfitHistory]:
         return None
     
 def get_net_income_from_file(ticker: str, exchange: str) -> list[NetProfitHistory]:
-    net_profits = pd.read_csv('net_income_nyse_nasdaq.csv')
-    net_profits_for_ticker = net_profits[(net_profits['tickers'] == ticker) & (net_profits['exchange'] == exchange)]
+    #TODO: differentiate between MOEX and the rest, 'moex_data.csv'
+    if exchange == 'MOEX':
+        net_profits = pd.read_csv('moex_data.csv')
+        net_profits_for_ticker = net_profits[net_profits['Ticker'] == ticker]
+        net_profits_for_ticker = net_profits_for_ticker[['2019','2020','2021','2022','2023','2024']]
+    else:
+        net_profits = pd.read_csv('net_income_nyse_nasdaq.csv')
+        net_profits_for_ticker = net_profits[(net_profits['tickers'] == ticker) & (net_profits['exchange'] == exchange)]
 
     if net_profits_for_ticker.empty:
         return None
@@ -113,29 +120,67 @@ def calculate_average_growth(history: list[NetProfitHistory]) -> AverageGrowth:
 def safe_float(val):
     return float(val) if val is not None else None
 
+def get_price_from_moex(ticker:str) -> float:
+    with requests.Session() as session:
+        data = apimoex.get_board_history(session, ticker)
+        df = pd.DataFrame(data)
+        df.set_index('TRADEDATE', inplace=True)
+        return float(df[df['BOARDID']=='TQBR'].iloc[-1]['CLOSE'])
+
+def get_moex_stock_data(ticker:str) -> tuple:
+    data = pd.read_csv('moex_data.csv')
+    df = pd.DataFrame(columns=['ticker', 'name', 'description', 'exchange', 'close', 'country',
+       'market_cap_basic', 'sector', 'industry',
+       'earnings_per_share_basic_ttm', 'price_earnings_ttm', 'dividends_yield',
+       'free_cash_flow_fy', 'debt_to_equity', 'sector_ru', 'industry_ru'])
+    name = data.iloc[0]['Name']
+    description = ''
+    exchange = 'MOEX'
+    close = get_price_from_moex(ticker=ticker)
+    country = 'Russia'
+    market_cap_basic = round(close * float(data.iloc[0]['Issue']),2)
+    sector = data.iloc[0]['Sector']
+    industry = data.iloc[0]['Industry']
+    earnings_per_share_basic_ttm = data.iloc[0]['EPS']
+    price_earnings_ttm = round(close/earnings_per_share_basic_ttm,2)
+    dividends_yield = data.iloc[0]['Dividends']
+    free_cash_flow_fy = data.iloc[0]['FCF']
+    debt_to_equity = round(data.iloc[0]['Debt'] / data.iloc[0]['Equity'],2)
+    sector_ru = data.iloc[0]['SectorRu']
+    industry_ru = data.iloc[0]['IndustryRu']
+    df.loc[len(df)] = [ticker, name, description, exchange, close, country, market_cap_basic, sector, industry, 
+                       earnings_per_share_basic_ttm, price_earnings_ttm, dividends_yield, free_cash_flow_fy,
+                       debt_to_equity, sector_ru, industry_ru]
+    return 1,df
+
 def get_valuation(exchange:str, ticker: str) -> ValuationResult:
+    #TODO: if exchange is moex logic is different
     stockInfo = None
     if stockInfo is None:
-        df = (
-            Query()
-            .select(
-                "name",
-                "description",
-                "exchange",
-                "close",
-                "country",
-                "market_cap_basic",
-                "sector",
-                "industry",
-                "earnings_per_share_basic_ttm",
-                "price_earnings_ttm",
-                "dividends_yield",
-                "free_cash_flow_fy",
-                "debt_to_equity"
+        df = pd.DataFrame()
+        if exchange == 'MOEX':
+            df = get_moex_stock_data(ticker = ticker)
+        else:
+            df = (
+                Query()
+                .select(
+                    "name",
+                    "description",
+                    "exchange",
+                    "close",
+                    "country",
+                    "market_cap_basic",
+                    "sector",
+                    "industry",
+                    "earnings_per_share_basic_ttm",
+                    "price_earnings_ttm",
+                    "dividends_yield",
+                    "free_cash_flow_fy",
+                    "debt_to_equity"
+                )
+                .where(col("name") == ticker)
+                .get_scanner_data()
             )
-            .where(col("name") == ticker)
-            .get_scanner_data()
-        )
         if len(df[1])>0:
             row = df[1].iloc[0]
 
@@ -148,6 +193,12 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
                 capitalization=safe_float(row["market_cap_basic"]),
                 sector=row["sector"],
                 industry=row["industry"],
+                sectorRu= row["sector_ru"]
+                if exchange=="MOEX"
+                else None,
+                industryRu= row["industry_ru"]
+                if exchange=="MOEX"
+                else None,
                 epsTtm=safe_float(row["earnings_per_share_basic_ttm"]),
                 peTtm=safe_float(row["price_earnings_ttm"]),
                 dividendYield=safe_float(row["dividends_yield"])
