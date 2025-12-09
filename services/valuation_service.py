@@ -146,7 +146,8 @@ def get_moex_stock_data(ticker:str) -> tuple:
     price_earnings_ttm = round(close/earnings_per_share_basic_ttm,2)
     dividends_yield = data.iloc[0]['Dividends']
     free_cash_flow_fy = data.iloc[0]['FCF']
-    debt_to_equity = round(data.iloc[0]['Debt'] / data.iloc[0]['Equity'],2)
+    #because equity here isn't equity these are assets I am cacling DE as D/(A-D):
+    debt_to_equity = round(abs(data.iloc[0]['Debt']) / (data.iloc[0]['Equity']-abs(data.iloc[0]['Debt'])),2)
     sector_ru = data.iloc[0]['SectorRu']
     industry_ru = data.iloc[0]['IndustryRu']
     df.loc[len(df)] = [ticker, name, description, exchange, close, country, market_cap_basic, sector, industry, 
