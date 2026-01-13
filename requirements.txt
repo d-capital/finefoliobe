@@ -2,7 +2,7 @@ fastapi
 uvicorn
 httpx
 feedparser
-yfinance
+yfinance==0.2.28
 pandas
 scikit-learn
 alpha_vantage
