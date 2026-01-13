@@ -1,10 +1,14 @@
 import yfinance as yf
 from models.valuation_result import ValuationResult, Valuation, StockInfo, NetProfitHistory, AverageGrowth
 import requests
+import numpy as np
 import pandas as pd
 from tradingview_screener import Query, col
+import yfinance as yf
+import statsmodels.api as sm
 import time
 import apimoex
+from datetime import datetime, timedelta
 
 def get_cik_from_ticker(ticker: str) -> str:
     ticker = ticker.upper()
@@ -120,6 +124,25 @@ def calculate_average_growth(history: list[NetProfitHistory]) -> AverageGrowth:
 def safe_float(val):
     return float(val) if val is not None else None
 
+
+def get_prices_from_moex(ticker:str, boardid:str, market: str) -> pd.DataFrame:
+    end_date = datetime.now().strftime('%Y-%m-%d')
+    start_date = (datetime.now() - timedelta(days=3*365)).strftime('%Y-%m-%d')
+    with requests.Session() as session:
+        data = apimoex.get_market_history(session, ticker, start_date, end_date)
+        df = pd.DataFrame(data)
+        df.set_index('TRADEDATE', inplace=True)
+        return df[df['BOARDID']==boardid]
+    
+def get_index_prices_from_moex(ticker:str, boardid:str, market: str) -> pd.DataFrame:
+    end_date = datetime.now().strftime('%Y-%m-%d')
+    start_date = (datetime.now() - timedelta(days=3*365)).strftime('%Y-%m-%d')
+    with requests.Session() as session:
+        data = apimoex.get_board_history(session, 'IMOEX', board='SNDX',start=start_date,end=end_date, market='index')
+        df = pd.DataFrame(data)
+        df.set_index('TRADEDATE', inplace=True)
+        return df
+
 def get_price_from_moex(ticker:str) -> float:
     with requests.Session() as session:
         data = apimoex.get_board_history(session, ticker)
@@ -156,7 +179,6 @@ def get_moex_stock_data(ticker:str) -> tuple:
     return 1,df
 
 def get_valuation(exchange:str, ticker: str) -> ValuationResult:
-    #TODO: if exchange is moex logic is different
     stockInfo = None
     if stockInfo is None:
         df = pd.DataFrame()
@@ -282,3 +304,207 @@ def calculate_cagr(beginning_value, ending_value, number_of_years):
 
     cagr = (ending_value / beginning_value) ** (1 / number_of_years) - 1
     return cagr
+
+def calculate_market_value_of_debt(total_debt, interest_expense, r_d=0.05, n=10):
+    """
+    Estimates Market Value of Debt
+    r_d: Cost of debt (market rate) from interest payments or bond yields 
+    n: Maturity in years
+    """
+    if not total_debt or total_debt == 0:
+        return 0
+    
+    # Calculate MVD using bond pricing formula
+    mvd = (interest_expense * (1 - (1 + r_d)**-n) / r_d) + (total_debt / (1 + r_d)**n)
+    return mvd
+
+def calculate_capm(market:str,ticker:str, rf:float = 0.145, rm: float = 0.135) -> float:
+    """   
+    :param market: market - US market "NYSE", or RU market "MOEX", decides which index to take
+    :type market: str
+    :param ticker: ticker code "AAPL", "F", etc.
+    :type ticker: str
+    :param rf: risk free rate, 10Y treasuries bond yield (ca. 4% as of 2025), or long OFZ yield alson 10y (ca. 13% as of 2025) 
+    :type rf: float
+    :param rm: market rate - assumingly SP500  returns over 3 last years on average, IMOEX returns for RU market
+    :type rm: float
+    :return: expected returns
+    :rtype: float
+    """
+    if market != 'MOEX':
+        stock_prices = yf.download(tickers=ticker,period='3y')
+        stock_close_prices = stock_prices['Close'][ticker]
+        index_ticker = "^GSPC"
+        index_price = yf.download(tickers=index_ticker,period='3y')
+        index_close_price = index_price['Close'][index_ticker]
+        stock_returns = np.log(stock_close_prices / stock_close_prices.shift(1))
+        index_returns = np.log(index_close_price / index_close_price.shift(1))
+    else:
+        index_price = 'IMOEX'
+        stock_prices = get_prices_from_moex(ticker,'TQBR', 'shares')#TQOB for bonds, TQBR for stocks
+        stock_close_prices = stock_prices['CLOSE']
+        index_price = get_index_prices_from_moex("IMOEX",'SNDX', 'index')#TQOB for bonds, TQBR for stocks
+        index_close_price = index_price['CLOSE']
+        stock_returns = np.log(stock_close_prices / stock_close_prices.shift(1))
+        index_returns = np.log(index_close_price / index_close_price.shift(1))
+    # Объединение данных
+    returns = pd.concat([stock_returns, index_returns], axis=1).dropna()
+    returns.columns = ['Stock', 'Index']
+    # Линейная регрессия
+    X = sm.add_constant(returns['Index'])
+    model = sm.OLS(returns['Stock'], X).fit()
+    beta = model.params['Index']
+    # Расчёт по формуле CAPM
+    expected_return = rf + beta * (rm - rf)
+    return expected_return
+
+def calculate_wacc(equity_value:float,debt_value:float,tax_rate:float,cost_of_equity:float,cost_of_debt:float) -> float:
+    """
+    :param equity_value: market capitalization, absolute value
+    :type equity_value: float
+    :param debt_value: market value of debt, use calculate_market_value_of_debt to get it.
+    :type debt_value: float
+    :param tax_rate: effective tax rate in country of calculation, i.e. 0.2 in russia in 2025
+    :type tax_rate: float
+    :param cost_of_equity: result of CAPM
+    :type cost_of_equity: float
+    :param cost_of_debt: bond yield of a given company
+    :type cost_of_debt: float
+    :return: WACC rate
+    :rtype: float
+    """
+    total_capital = equity_value + debt_value
+    wacc = (equity_value / total_capital) * cost_of_equity + \
+        (debt_value / total_capital) * cost_of_debt * (1 - tax_rate)
+    return wacc
+
+def calculate_dcf_fcf(fcf:list[str],growth_rate:float,years:int,discount_rate:float,terminal_growth:float,net_debt:float,
+                      shares_outstanding:float) -> float:
+    """
+    :param fcf: 3 years list of free cash flow
+    :type fcf: list[str]
+    :param growth_rate: growth rate, may be average net income growth rate
+    :type growth_rate: float
+    :param years: number of years to do projection for
+    :type years: int
+    :param discount_rate: WACC
+    :type discount_rate: float
+    :param terminal_growth: Long-term GDP-level growth (3%)
+    :type terminal_growth: float
+    :param net_debt: cash minus debt (negative if cash-rich) 
+    :type net_debt: float
+    :param shares_outstanding: number of shares outstanding
+    :type shares_outstanding: float
+    :return: fair value according to DCF based on FCF
+    :rtype: float
+    """
+    last_fcf = fcf[-1]
+    fcf_proj = [last_fcf * ((1 + growth_rate) ** i) for i in range(1, years + 1)]
+    discount_factors = [(1 / (1 + discount_rate) ** i) for i in range(1, years + 1)]
+    pv_fcf = [fcf_proj[i] * discount_factors[i] for i in range(years)]
+
+    # Terminal value
+    terminal_value = (fcf_proj[-1] * (1 + terminal_growth)) / (discount_rate - terminal_growth)
+    pv_terminal = terminal_value / ((1 + discount_rate) ** years)
+
+    # Total equity value
+    enterprise_value = sum(pv_fcf) + pv_terminal
+    equity_value = enterprise_value + net_debt
+    fair_value_per_share = equity_value / shares_outstanding
+    return fair_value_per_share
+
+def get_interest_expense_from_file(ticker:str, exchange:str):
+    if exchange == 'MOEX':
+        df = pd.read_csv('moex_data.csv')
+        interest_expense_row = df[df['Ticker'] == ticker]
+        if len(interest_expense_row)>0:
+            interest_expense = df[df['Ticker'] == ticker].iloc[0]['InterestExpense']
+        else:
+            interest_expense = None
+        return float(interest_expense)
+    else:
+        df = pd.read_csv('net_income_nyse_nasdaq.csv')
+        interest_expense_row = df[df['tickers'] == ticker]
+        if len(interest_expense_row)>0:
+            interest_expense = df[df['tickers'] == ticker].iloc[0]['interest_expense']
+        else:
+            interest_expense = None
+        return float(interest_expense)
+
+def get_dcf_valuation(exchange:str, ticker: str):
+    if exchange == "MOEX":
+        capm = calculate_capm(market=exchange, ticker=ticker, rm=0.10, rf=0.13)
+    else:
+        capm = calculate_capm(market=exchange, ticker=ticker, rm=0.10, rf=0.04)
+    if exchange == 'MOEX':
+        df = pd.read_csv('moex_data.csv')
+        row = df[df['Ticker'] == ticker].iloc[0]
+    else:
+        df = (
+                    Query()
+                    .select(
+                        "name",
+                        "description",
+                        "exchange",
+                        "close",
+                        "country",
+                        "market_cap_basic",
+                        "sector",
+                        "industry",
+                        "earnings_per_share_basic_ttm",
+                        "price_earnings_ttm",
+                        "dividends_yield",
+                        "free_cash_flow_fy",
+                        "debt_to_equity",
+                        "total_debt",
+                        "net_debt",
+                        "total_shares_outstanding_fundamental",
+                        "effective_interest_rate_on_debt_ttm"
+                    )
+                    .where(col("name") == ticker)
+                    .get_scanner_data()
+                )
+        row = df[1].iloc[0]
+    if exchange == 'MOEX':
+        close = get_price_from_moex(ticker=ticker)
+        equity_value = round(close * float(row['Issue']),2)
+        total_debt = row['Debt']
+        cost_of_debt = float(row['InterestRateOnDebt']) 
+        fcf = [row["FCF"]] # seems like only last fcf is needed for calc
+        net_debt =row['NetDebt']
+        shares_outstanding = row['Issue']
+    else:
+        equity_value = row['market_cap_basic']
+        total_debt = row['total_debt']
+        cost_of_debt = float(row['effective_interest_rate_on_debt_ttm'])/100  # downloaded to file for moex
+        fcf = [row["free_cash_flow_fy"]] # seems like only last fcf is needed for calc
+        net_debt =row['net_debt']
+        shares_outstanding = row['total_shares_outstanding_fundamental']
+    interest_expense = get_interest_expense_from_file(ticker=ticker,exchange=exchange)
+    debt_value = calculate_market_value_of_debt(total_debt=total_debt,
+                                                 interest_expense=interest_expense,r_d=cost_of_debt,n=3)
+    wacc = calculate_wacc(equity_value=equity_value,debt_value=debt_value,tax_rate=0.21,
+                          cost_of_equity=capm,cost_of_debt=cost_of_debt)
+    netProfitHistory = get_net_income_from_file(ticker, exchange)
+    if netProfitHistory is not None and len(netProfitHistory)>=5:
+        averageGrowth: AverageGrowth = calculate_average_growth(netProfitHistory)
+    else:
+        averageGrowth: AverageGrowth = None
+    if averageGrowth is not None and averageGrowth.fiveYears is not None:
+        growth_rate = averageGrowth.fiveYears
+    else:
+        growth_rate = 0
+    if growth_rate > 25:
+        growth_rate = 25
+    elif growth_rate <0:
+        growth_rate = 0
+    else:
+        growth_rate = growth_rate
+    if exchange == "MOEX":
+        terminal_growth = 0.043 # Russian GDP Growth Rate 2024
+    else:
+        terminal_growth = 0.028 # US GDP Growth Rate 2024
+    dcf_fcf_fair_value = calculate_dcf_fcf(fcf=fcf,growth_rate=growth_rate/100, years=3,discount_rate=wacc,
+                                           terminal_growth=terminal_growth,
+                                           net_debt=net_debt,shares_outstanding=shares_outstanding)
+    return dcf_fcf_fair_value

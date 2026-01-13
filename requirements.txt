@@ -13,3 +13,4 @@ APScheduler
 tradingview-screener
 requests
 apimoex
+statsmodels
