@@ -19,9 +19,15 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Finance API", lifespan=lifespan)
 
+origins = [
+    "https://localhost",        # Если вы заходите по https на локалке
+    "https://fine-folio.ru",   # Ваш реальный домен
+    "http://localhost",         # Если используется http
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
