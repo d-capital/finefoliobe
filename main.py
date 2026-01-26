@@ -22,7 +22,7 @@ app = FastAPI(title="Finance API", lifespan=lifespan)
 origins = [
     "https://localhost",        # Если вы заходите по https на локалке
     "https://fine-folio.ru",   # Ваш реальный домен
-    "http://localhost",         # Если используется http
+    "http://localhost:4200",         # Если используется http
 ]
 
 app.add_middleware(

@@ -63,11 +63,11 @@ def get_net_income(ticker: str) -> list[NetProfitHistory]:
         return None
     
 def get_net_income_from_file(ticker: str, exchange: str) -> list[NetProfitHistory]:
-    #TODO: differentiate between MOEX and the rest, 'moex_data.csv'
     if exchange == 'MOEX':
         net_profits = pd.read_csv('moex_data.csv')
         net_profits_for_ticker = net_profits[net_profits['Ticker'] == ticker]
-        net_profits_for_ticker = net_profits_for_ticker[['2019','2020','2021','2022','2023','2024']]
+        last_five_years = [str(datetime.now().year - i) for i in range(2,7)]
+        net_profits_for_ticker = net_profits_for_ticker[last_five_years]
     else:
         net_profits = pd.read_csv('net_income_nyse_nasdaq.csv')
         net_profits_for_ticker = net_profits[(net_profits['tickers'] == ticker) & (net_profits['exchange'] == exchange)]
