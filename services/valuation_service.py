@@ -9,6 +9,7 @@ import statsmodels.api as sm
 import time
 import apimoex
 from datetime import datetime, timedelta
+from tvDatafeed import TvDatafeed, Interval
 
 def get_cik_from_ticker(ticker: str) -> str:
     ticker = ticker.upper()
@@ -334,11 +335,22 @@ def calculate_capm(market:str,ticker:str, rf:float = 0.145, rm: float = 0.135) -
     :rtype: float
     """
     if market != 'MOEX':
-        stock_prices = yf.download(tickers=ticker,period='3y')
-        stock_close_prices = stock_prices['Close'][ticker]
-        index_ticker = "^GSPC"
-        index_price = yf.download(tickers=index_ticker,period='3y')
-        index_close_price = index_price['Close'][index_ticker]
+        tv = TvDatafeed()
+        stock_prices = tv.get_hist(
+            symbol=ticker, 
+            exchange=market, 
+            interval=Interval.in_daily, 
+            n_bars=500
+        )
+        stock_close_prices = stock_prices['close']
+        index_ticker = "SPX"
+        index_price = tv.get_hist(
+            symbol=index_ticker, 
+            exchange='CBOE', 
+            interval=Interval.in_daily, 
+            n_bars=500
+        )
+        index_close_price = index_price['close']
         stock_returns = np.log(stock_close_prices / stock_close_prices.shift(1))
         index_returns = np.log(index_close_price / index_close_price.shift(1))
     else:

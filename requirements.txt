@@ -14,3 +14,4 @@ tradingview-screener
 requests
 apimoex
 statsmodels
+git+https://github.com/rongardF/tvdatafeed.git
