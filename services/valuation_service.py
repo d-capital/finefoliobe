@@ -250,6 +250,11 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
                 #peg = round(stockInfo.peTtm/averageGrowth.fiveYears,2)
                 #if peg < 0.01:
                     #peg = 1
+            calcEpsTtm = None
+            if stockInfo.epsTtm < 0:
+                calcEpsTtm = 0
+            else:
+                calcEpsTtm = stockInfo.epsTtm
             if averageGrowth is not None and averageGrowth.fiveYears is not None and averageGrowth.fiveYears > 25:
                 calcAvgGrowthRate = 25.00
             elif averageGrowth is not None and averageGrowth.fiveYears is not None and averageGrowth.fiveYears <= 25:
@@ -257,13 +262,19 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
             else:
                 calcAvgGrowthRate = None
             if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
-                fairPrice = calcAvgGrowthRate* stockInfo.epsTtm*peg
+                if calcAvgGrowthRate < 0:
+                    calcAvgGrowthRate = 0
+                fairPrice = calcAvgGrowthRate*calcEpsTtm*peg
             else:
                 fairPrice = None
             if averageGrowth is not None and stockInfo.epsTtm is not None and fairPrice is not None:
-                explanationText = f"{round(calcAvgGrowthRate,2)} x {round(stockInfo.epsTtm,2)} = {round(fairPrice,2)}"
+                explanationText = f"{round(calcAvgGrowthRate,2)} x {round(calcEpsTtm,2)} = {round(fairPrice,2)}"
+            elif averageGrowth is not None and stockInfo.epsTtm is None and fairPrice is None:
+                explanationText = f"{round(calcAvgGrowthRate,2)} x N/A = N/A"
+            elif averageGrowth is None and stockInfo.epsTtm is not None and fairPrice is None:
+                explanationText = f"N/A x {round(calcEpsTtm,2)} = N/A"
             else:
-                explanationText = ""
+                explanationText = "N/A x N/A = N/A"
             if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
                 resultPercent = round(((round(fairPrice,2)-round(stockInfo.price,2))/round(stockInfo.price,2))*100,2)
             else:
