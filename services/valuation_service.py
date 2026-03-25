@@ -102,7 +102,7 @@ def calculate_average_growth(history: list[NetProfitHistory]) -> AverageGrowth:
     for i in range(1, len(history)):
         prev, curr = history[i-1].value, history[i].value
         if prev and prev != 0:
-            yoy_growths.append((curr - prev) / prev)
+            yoy_growths.append((curr - prev) / abs(prev))
 
     # last year's YoY growth (TTM)
     ttm_growth = yoy_growths[-1] if len(yoy_growths) >= 1 else None
