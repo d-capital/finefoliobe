@@ -246,10 +246,10 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
             else:
                 averageGrowth: AverageGrowth = None
             peg=1
-            #if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.peTtm is not None:
-                #peg = round(stockInfo.peTtm/averageGrowth.fiveYears,2)
-                #if peg < 0.01:
-                    #peg = 1
+            if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.peTtm is not None:
+                peg = round(stockInfo.peTtm/averageGrowth.fiveYears,2)
+                if peg < 0.01:
+                    peg = 1
             calcEpsTtm = None
             if stockInfo.epsTtm < 0:
                 calcEpsTtm = 0
@@ -267,14 +267,16 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
                 fairPrice = calcAvgGrowthRate*calcEpsTtm*peg
             else:
                 fairPrice = None
-            if averageGrowth is not None and stockInfo.epsTtm is not None and fairPrice is not None:
-                explanationText = f"{round(calcAvgGrowthRate,2)} x {round(calcEpsTtm,2)} = {round(fairPrice,2)}"
-            elif averageGrowth is not None and stockInfo.epsTtm is None and fairPrice is None:
-                explanationText = f"{round(calcAvgGrowthRate,2)} x N/A = N/A"
-            elif averageGrowth is None and stockInfo.epsTtm is not None and fairPrice is None:
-                explanationText = f"N/A x {round(calcEpsTtm,2)} = N/A"
+            if averageGrowth is not None and stockInfo.epsTtm is not None and fairPrice is not None and stockInfo.peTtm is not None:
+                explanationText = f"{round(calcAvgGrowthRate,2)} x {round(calcEpsTtm,2)} x {round(peg,2)} = {round(fairPrice,2)}"
+            elif averageGrowth is not None and stockInfo.epsTtm is None and fairPrice is None and stockInfo.peTtm is not None:
+                explanationText = f"{round(calcAvgGrowthRate,2)} x N/A x {round(peg,2)} = N/A"
+            elif averageGrowth is None and stockInfo.epsTtm is not None and fairPrice is None and stockInfo.peTtm is not None:
+                explanationText = f"N/A x {round(calcEpsTtm,2)} x {round(peg,2)} = N/A"
+            elif averageGrowth is not None and stockInfo.epsTtm is not None and fairPrice is None and stockInfo.peTtm is None:
+                explanationText = f"{round(calcAvgGrowthRate,2)} x {round(calcEpsTtm,2)} x N/A = N/A"
             else:
-                explanationText = "N/A x N/A = N/A"
+                explanationText = "N/A x N/A x N/A = N/A"
             if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
                 resultPercent = round(((round(fairPrice,2)-round(stockInfo.price,2))/round(stockInfo.price,2))*100,2)
             else:
