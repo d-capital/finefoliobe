@@ -101,23 +101,24 @@ def calculate_average_growth(history: list[NetProfitHistory]) -> AverageGrowth:
     yoy_growths = []
     for i in range(1, len(history)):
         prev, curr = history[i-1].value, history[i].value
-        if prev and prev != 0:
-            yoy_growths.append((curr - prev) / abs(prev))
-
+        if prev:# and prev != 0:
+            #yoy_growths.append((curr - prev) / abs(prev))         
+            yoy_growths.append(calculate_cagr(prev,curr,2))
+            
     # last year's YoY growth (TTM)
-    ttm_growth = yoy_growths[-1] if len(yoy_growths) >= 1 else None
-    #ttm_cagr = calculate_cagr(history[-2].value, history[-1].value, 1) if len(yoy_growths) >= 1 else None
-    #ttm_growth = ttm_cagr
+    #ttm_growth = yoy_growths[-1] if len(yoy_growths) >= 1 else None
+    ttm_cagr = calculate_cagr(history[-2].value, history[-1].value, 1) if len(yoy_growths) >= 1 else None
+    ttm_growth = ttm_cagr
 
     # average of last 3 YoY growths
-    three_years_growth = (sum(yoy_growths[-3:]) / len(yoy_growths)) if len(yoy_growths) >= 3 else None
-    #three_years_cagr = calculate_cagr(history[-3].value ,history[-1].value, 3) if len(yoy_growths) >= 3 else None
-    #three_years_growth = three_years_cagr
+    #three_years_growth = (sum(yoy_growths[-3:]) / len(yoy_growths)) if len(yoy_growths) >= 3 else None
+    three_years_cagr = calculate_cagr(history[-3].value ,history[-1].value, 3) if len(yoy_growths) >= 3 else None
+    three_years_growth = three_years_cagr
 
     # average of last 5 YoY growths
-    five_years_growth = (sum(yoy_growths[-5:]) / len(yoy_growths)) if len(yoy_growths) >= 4 else None
-    #five_years_cagr = calculate_cagr(history[-5].value, history[-1].value, 5) if len(yoy_growths) >= 4 else None
-    #five_years_growth = five_years_cagr
+    #five_years_growth = (sum(yoy_growths[-5:]) / len(yoy_growths)) if len(yoy_growths) >= 4 else None
+    five_years_cagr = calculate_cagr(history[-5].value, history[-1].value, 5) if len(yoy_growths) >= 4 else None
+    five_years_growth = five_years_cagr
     return AverageGrowth(
         ttm=round(ttm_growth*100,2) if ttm_growth is not None else None,
         threeYears=round(three_years_growth*100,2) if three_years_growth is not None else None,
@@ -305,23 +306,27 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
             return None
 
 def calculate_cagr(beginning_value, ending_value, number_of_years):
-    """
-    Calculates the Compound Annual Growth Rate (CAGR).
-
-    Args:
-    beginning_value (float): The initial value of the investment or metric.
-    ending_value (float): The final value of the investment or metric.
-    number_of_years (int or float): The number of periods (years) over which 
-                                        the growth occurred.
-
-    Returns:
-    float: The Compound Annual Growth Rate (CAGR).
-    """
     if number_of_years <= 0:
         raise ValueError("Number of years must be greater than zero.")
-
-    cagr = (ending_value / beginning_value) ** (1 / number_of_years) - 1
-    return cagr
+    
+    if beginning_value == 0:
+        beginning_value = 0.1
+    
+    if ending_value<0 and beginning_value<0:
+        """
+        Calculates CAGR for negative start and end value:
+        ((|Ending / Beginning|)^(1/n) - 1 * -1
+        """
+        cagr = (abs(ending_value / beginning_value)) ** (1 / number_of_years) - 1
+    else:
+        """
+        Calculates CAGR based on formula:
+        ((Ending - Beginning + |Beginning|) / |Beginning|)^(1/n) - 1
+        """
+        abs_beg = abs(beginning_value)
+        numerator = ending_value - beginning_value + abs_beg
+        cagr = (numerator / abs_beg) ** (1 / number_of_years) - 1
+    return cagr.real
 
 def calculate_market_value_of_debt(total_debt, interest_expense, r_d=0.05, n=10):
     """
