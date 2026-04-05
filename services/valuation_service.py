@@ -170,7 +170,7 @@ def get_moex_stock_data(ticker:str) -> tuple:
     sector = data.iloc[0]['Sector']
     industry = data.iloc[0]['Industry']
     earnings_per_share_basic_ttm = data.iloc[0]['EPS']
-    price_earnings_ttm = round(close/earnings_per_share_basic_ttm,2)
+    price_earnings_ttm = round(close/earnings_per_share_basic_ttm,2) if earnings_per_share_basic_ttm != 0 else 0
     dividends_yield = data.iloc[0]['Dividends']
     free_cash_flow_fy = data.iloc[0]['FCF']
     #because equity here isn't equity these are assets I am cacling DE as D/(A-D):
