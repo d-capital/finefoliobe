@@ -107,7 +107,7 @@ def calculate_average_growth(history: list[NetProfitHistory]) -> AverageGrowth:
             
     # last year's YoY growth (TTM)
     #ttm_growth = yoy_growths[-1] if len(yoy_growths) >= 1 else None
-    ttm_cagr = calculate_cagr(history[-2].value, history[-1].value, 1) if len(history) >= 1 else None
+    ttm_cagr = calculate_cagr(history[-2].value, history[-1].value, 2) if len(history) >= 2 else None
     ttm_growth = ttm_cagr
 
     # average of last 3 YoY growths
@@ -117,7 +117,7 @@ def calculate_average_growth(history: list[NetProfitHistory]) -> AverageGrowth:
 
     # average of last 5 YoY growths
     #five_years_growth = (sum(yoy_growths[-5:]) / len(yoy_growths)) if len(yoy_growths) >= 4 else None
-    five_years_cagr = calculate_cagr(history[-5].value, history[-1].value, 5) if len(history) >= 4 else None
+    five_years_cagr = calculate_cagr(history[-5].value, history[-1].value, 5) if len(history) >= 5 else None
     five_years_growth = five_years_cagr
     return AverageGrowth(
         ttm=round(ttm_growth*100,2) if ttm_growth is not None else None,
@@ -126,7 +126,12 @@ def calculate_average_growth(history: list[NetProfitHistory]) -> AverageGrowth:
     )
 
 def safe_float(val):
-    return float(val) if val is not None else None
+    if np.isnan(val):
+        return None
+    elif val is None:
+        return None
+    else:
+        return float(val)
 
 
 def get_prices_from_moex(ticker:str, boardid:str, market: str) -> pd.DataFrame:
@@ -272,15 +277,15 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
                         peg = 0
             else:
                 peg=None
-            if averageGrowth is not None and stockInfo.epsTtm is not None and fairPrice is not None and stockInfo.peTtm is not None:
+            if calcAvgGrowthRate is not None and stockInfo.epsTtm is not None and fairPrice is not None and stockInfo.peTtm is not None:
                 explanationText = f"{round(calcAvgGrowthRate,2)} x {round(calcEpsTtm,2)} = {round(fairPrice,2)}"
-            elif averageGrowth is not None and stockInfo.epsTtm is None and fairPrice is None:
+            elif calcAvgGrowthRate is not None and stockInfo.epsTtm is None and fairPrice is None:
                 explanationText = f"{round(calcAvgGrowthRate,2)} x N/A = N/A"
-            elif averageGrowth is None and stockInfo.epsTtm is not None and fairPrice is None:
+            elif calcAvgGrowthRate is None and stockInfo.epsTtm is not None and fairPrice is None:
                 explanationText = f"N/A x {round(calcEpsTtm,2)} = N/A"
             else:
                 explanationText = "N/A x N/A = N/A"
-            if averageGrowth is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
+            if calcAvgGrowthRate is not None and averageGrowth.fiveYears is not None and stockInfo.epsTtm is not None:
                 resultPercent = round(((round(fairPrice,2)-round(stockInfo.price,2))/round(stockInfo.price,2))*100,2)
             else:
                 resultPercent = 0.0
@@ -317,7 +322,10 @@ def calculate_cagr(beginning_value, ending_value, number_of_years):
         Calculates CAGR for negative start and end value:
         ((|Ending / Beginning|)^(1/n) - 1 * -1
         """
-        cagr = (abs(ending_value / beginning_value)) ** (1 / number_of_years) - 1
+        if ending_value<beginning_value:
+            cagr = ((abs(ending_value / beginning_value)) ** (1 / number_of_years) - 1) * -1
+        else:
+            cagr = ((abs(ending_value / beginning_value)) ** (1 / number_of_years) - 1)
     else:
         """
         Calculates CAGR based on formula:
