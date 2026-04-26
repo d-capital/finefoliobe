@@ -110,3 +110,6 @@ venv.bak/
 .vscode
 .vscode/
 .vscode/*
+
+#cookie consent data
+cookie_consent_data/

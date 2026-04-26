@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import news, exchange, macro_data, countries, valuation, screener
+from routers import news, exchange, macro_data, countries, saveconsent, valuation, screener
 from contextlib import asynccontextmanager
 from db.session import init_db
 from jobs.macro_update import update
@@ -39,6 +39,7 @@ app.include_router(macro_data.router, prefix="/macro_data")
 app.include_router(countries.router, prefix="/countries")
 app.include_router(valuation.router,prefix="/valuation")
 app.include_router(screener.router, prefix="/screener")
+app.include_router(saveconsent.router, prefix="/saveconsent")
 
 from fastapi.routing import APIRoute
 
