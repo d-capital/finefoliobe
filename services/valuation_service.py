@@ -124,14 +124,16 @@ def calculate_average_growth(history: list[NetProfitHistory]) -> AverageGrowth:
         threeYears=round(three_years_growth*100,2) if three_years_growth is not None else None,
         fiveYears=round(five_years_growth*100,2) if five_years_growth is not None else None
     )
-
 def safe_float(val):
-    if np.isnan(val):
+    # 1. Check for None or pandas/numpy nulls first
+    if pd.isna(val) or val is None:
         return None
-    elif val is None:
-        return None
-    else:
+    try:
+        # 2. Try to convert to float
         return float(val)
+    except (ValueError, TypeError):
+        # 3. Handle strings that can't be numbers
+        return None
 
 
 def get_prices_from_moex(ticker:str, boardid:str, market: str) -> pd.DataFrame:
