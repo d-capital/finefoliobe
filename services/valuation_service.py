@@ -158,6 +158,7 @@ def get_price_from_moex(ticker:str) -> float:
     with requests.Session() as session:
         data = apimoex.get_board_history(session, ticker)
         df = pd.DataFrame(data)
+        df = df.dropna()
         df.set_index('TRADEDATE', inplace=True)
         return float(df[df['BOARDID']=='TQBR'].iloc[-1]['CLOSE'])
 
