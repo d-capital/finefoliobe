@@ -325,7 +325,7 @@ def calculate_cagr(beginning_value, ending_value, number_of_years):
         Calculates CAGR for negative start and end value:
         ((|Ending / Beginning|)^(1/n) - 1 * -1
         """
-        if ending_value<beginning_value:
+        if abs(ending_value)<abs(beginning_value):
             cagr = ((abs(ending_value / beginning_value)) ** (1 / number_of_years) - 1) * -1
         else:
             cagr = ((abs(ending_value / beginning_value)) ** (1 / number_of_years) - 1)
