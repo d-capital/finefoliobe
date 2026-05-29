@@ -1,0 +1,169 @@
+language,component,label,text
+en,valuate,loadingLabel,Loading valuation data...
+ru,valuate,loadingLabel,Загружаю данные для оценки...
+es,valuate,loadingLabel,Cargando datos de valoración...
+en,valuate,exchangeLabel,Exchange: 
+ru,valuate,exchangeLabel,Биржа: 
+es,valuate,exchangeLabel,Intercambio: 
+en,valuate,countryLabel,Country: 
+ru,valuate,countryLabel,Страна: 
+es,valuate,countryLabel,País: 
+en,valuate,stockInformationLabel,Overview
+ru,valuate,stockInformationLabel,Обзор
+es,valuate,stockInformationLabel,Resumen
+en,valuate,priceLabel,Price:
+ru,valuate,priceLabel,Цена:
+es,valuate,priceLabel,Precio:
+en,valuate,marketCapLabel,Market Cap
+ru,valuate,marketCapLabel,Рыночная капитализация
+es,valuate,marketCapLabel,Capitalización de mercado
+en,valuate,sectorLabel,Sector
+ru,valuate,sectorLabel,Сектор
+es,valuate,sectorLabel,Sector
+en,valuate,industryLabel,Industry
+ru,valuate,industryLabel,Индустрия
+es,valuate,industryLabel,Industria
+en,valuate,epsTtmLabel,Earnings per Share Trailing Twelve Month (EPS TTM)
+ru,valuate,epsTtmLabel,Прибыль на акцию за последние 12 месяцев (EPS TTM)
+es,valuate,epsTtmLabel,Ganancias por Acción de los Últimos 12 Meses (EPS TTM)
+en,valuate,peTtmLabel,Price / Earnings per Share (P/E TTM)
+ru,valuate,peTtmLabel,Цена / прибыль (P/E TTM)
+es,valuate,peTtmLabel,Precio / Ganancias por Acción (P/E TTM)
+en,valuate,dividendsYieldLabel,Dividend Yield
+ru,valuate,dividendsYieldLabel,Дивидендная доходность
+es,valuate,dividendsYieldLabel,Rendimiento de dividendos
+en,valuate,valuationResultsLabel,Valuation Result
+ru,valuate,valuationResultsLabel,Резултат Оценки
+es,valuate,valuationResultsLabel,Resultado de la valoración
+en,valuate,valuationOverviewLabel,Valuation
+ru,valuate,valuationOverviewLabel,Оценка
+es,valuate,valuationOverviewLabel,Valoración
+en,valuate,downsidePotentialLabel,Downside potential
+ru,valuate,downsidePotentialLabel,Потенциал снижения
+es,valuate,downsidePotentialLabel,Potencial de caída
+en,valuate,upsidePotentialLabel,Upside potential
+ru,valuate,upsidePotentialLabel,Потенциал роста
+es,valuate,upsidePotentialLabel,Potencial de subida
+en,valuate,fairPriceLabel,Fair Price
+ru,valuate,fairPriceLabel,Справедливая цена
+es,valuate,fairPriceLabel,Precio Justo
+en,valuate,resultLabel,Result
+ru,valuate,resultLabel,Результат
+es,valuate,resultLabel,Resultado
+en,valuate,formulaLabel,Formula
+ru,valuate,formulaLabel,Формула
+es,valuate,formulaLabel,Fórmula
+en,valuate,formulaExplanationLabel,Net Income Growth Rate (5 years) * Earnings per Share Trailing Twelve Month (EPS TTM) = Fair Value (FV)
+ru,valuate,formulaExplanationLabel,Темп роста чистой прибыли за 5 лет (Net Income Growth Rate 5 years) * Прибыль на акцию за последние 12 месяцев (EPS TTM, Earnings per Share Trailing Twelve Months)  = Справедливая стоимость по формуле Питера Линча.
+es,valuate,formulaExplanationLabel,EPS x Tasa de crecimiento promedio de ingreso neto de 5 años
+en,valuate,maxGrowthRateNote,If the Net Income Growth Rate over 5 years was greater than 25%, we use 25, since Peter Lynch called growth of more than 25 percent per year unsustainable.
+ru,valuate,maxGrowthRateNote,Если темп роста чистой прибыли за 5 лет был больше 25% мы используем 25, так как Питер Линч называл рост более 25 процентов в год неустойчивым.
+es,valuate,maxGrowthRateNote,Si la tasa de crecimiento del ingreso neto en 5 años fue mayor al 25 %, usamos 25, ya que Peter Lynch consideraba insostenible un crecimiento superior al 25 % anual.
+en,valuate,notEnoughDataNote,If the Earnings per Share (EPS TTM) and/or Net Income Growth Rate over 5 years is less than 0 or missing, then the fair value estimate using the formula is not possible.
+ru,valuate,notEnoughDataNote,Если прибыль на акцию за последние 12 месяцев (EPS TTM) и/или темп роста чистой прибыли (Net Income Growth Rate) меньше 0 или отсутствует, то оценка справедливой стоимости по формуле невозможна.
+es,valuate,notEnoughDataNote,Si las Ganancias por Acción de los últimos 12 meses (EPS TTM) y/o la tasa de crecimiento del ingreso neto en 5 años son menores que 0 o faltan, la estimación del valor justo usando la fórmula no es posible.
+en,valuate,netProfitGrowthLabel,Net Income Growth Rate
+ru,valuate,netProfitGrowthLabel,Темп роста чистой прибыли (Net Income Growth Rate)
+es,valuate,netProfitGrowthLabel,Ingreso Neto
+en,valuate,averageIncomeGrowthLabel,Average Growth:
+ru,valuate,averageIncomeGrowthLabel,Средний Показатели Роста Чистой Прибыли
+es,valuate,averageIncomeGrowthLabel,Crecimiento Promedio:
+en,valuate,averageIncomeGrowthTtm,trailing 12 month Net Income growth rate (TTM).
+ru,valuate,averageIncomeGrowthTtm,темп роста чистой прибыли (Net Income) за 1 год.
+es,valuate,averageIncomeGrowthTtm,TTM: 
+en,valuate,averageThreeYearsGrowth,3 years Net Income growth rate.
+ru,valuate,averageThreeYearsGrowth,темп роста чистой прибыли (Net Income) за 3 года.
+es,valuate,averageThreeYearsGrowth,3 Años: 
+en,valuate,averageFiveYearsGrowth,5 years Net Income growth rate.
+ru,valuate,averageFiveYearsGrowth,темп роста чистой прибыли (Net Income) за 5 лет.
+es,valuate,averageFiveYearsGrowth,5 Años: 
+en,valuate,aboutLynchFormulaLabel,About Lynch Formula
+ru,valuate,aboutLynchFormulaLabel,Формула Питера Линча
+es,valuate,aboutLynchFormulaLabel,Acerca de la Fórmula de Lynch
+en,valuate,undervaluedLabel,Undervalued
+ru,valuate,undervaluedLabel,Недооценена
+es,valuate,undervaluedLabel,Subvaluado
+en,valuate,overvaluedLabel,Overvalued
+ru,valuate,overvaluedLabel,Переоценена
+es,valuate,overvaluedLabel,Sobrevalorado
+en,valuate,metricLabel,Metric
+ru,valuate,metricLabel,Показатель
+es,valuate,metricLabel,Métrica
+en,valuate,netProfitLabel,Net Profit
+ru,valuate,netProfitLabel,Чистая прибыль
+es,valuate,netProfitLabel,Ingreso Neto
+en,valuate,growthLabel,Growth YoY (%)
+ru,valuate,growthLabel,Рост год к году
+es,valuate,growthLabel,Crecimiento Año contra Año (%)
+en,valuate,pegLabel,Price / Earnings per Share / Net Income Growth Rate (PEG)
+ru,valuate,pegLabel,Цена акции / Прибыль на акцию / Темп роста прибыли (PEG)
+es,valuate,pegLabel,PEG
+en,valuate,pegFairLabel,Stock is fairly valued according to Peter Lynch value investing model.
+ru,valuate,pegFairLabel,Акция спарведливо оценена по методу Питера Линча.
+es,valuate,pegFairLabel,Justamente valorado
+en,valuate,pegOverLabel,Stock is overvalued according to Peter Lynch value investing model.
+ru,valuate,pegOverLabel,Акция переоценена по методу Питера Линча.
+es,valuate,pegOverLabel,Sobrevalorado
+en,valuate,pegUnderLabel,Stock is undervalued according to Peter Lynch value investing model.
+ru,valuate,pegUnderLabel,Акция недооценена по методу Питера Линча.
+es,valuate,pegUnderLabel,Subvaluado
+en,valuate,mainStockData,About company
+ru,valuate,mainStockData,О компании
+es,valuate,mainStockData,Acerca de la empresa
+en,valuate,finanacialOverviewLabel,Financials
+ru,valuate,finanacialOverviewLabel,Финансовые показатели
+es,valuate,finanacialOverviewLabel,Aspectos financieros
+en,valuate,noValuation,Valuation is not possible because of negatvie growth values.
+ru,valuate,noValuation,Оценка невозможна из-за отрицательных значений роста прибыли.
+es,valuate,noValuation,La valoración no es posible debido a valores de crecimiento negativos.
+en,valuate,noValuationData,Valuation is not possible because of missing data on 
+ru,valuate,noValuationData,Оценка невозможна из-за отсутствия данных o 
+es,valuate,noValuationData,La valoración no es posible debido a la falta de datos sobre 
+en,valuate,noValuationLabel,Valuation is not possible
+ru,valuate,noValuationLabel,Оценка невозможна
+es,valuate,noValuationLabel,Valoración no posible
+en,valuate,fcfLabel,Free Cash Flow (FCF)
+ru,valuate,fcfLabel,Свободный денежный поток (FCF)
+es,valuate,fcfLabel,Flujo de caja libre (FCF)
+en,valuate,deLabel,Debt to Equity (D/E)
+ru,valuate,deLabel,Долг к собственному капиталу (D/E)
+es,valuate,deLabel,Deuda a Capital (D/E)
+en,valuate,reliableDataSources,Reliable Data Sources
+ru,valuate,reliableDataSources,Надежные источники данных
+es,valuate,reliableDataSources,Fuentes de datos confiables
+en,valuate,naText,N/A
+ru,valuate,naText,Н/Д
+es,valuate,naText,N/A
+en,valuate,legalText,*is regonzide as extrimist, forbidden on the territory of Russian Federation.
+ru,valuate,legalText,*признана экстремистской, запрещена на территории РФ.
+es,valuate,legalText,*es reconocida como extremista, prohibida en el territorio de la Federación Rusa.
+en,valuate,aboutLynchFormulaText,<p>We calculate the fair value of a share using the following version of Peter Lynch's formula. Fair value of a share according to Peter Lynch = Net Income Growth Rate * Earnings per Share Trailing Twelve Month (EPS TTM). Net Income Growth Rate is calculated as Compound Annual Growth Rate (CAGR) for the last 5 years.</p><p>Compound Annual Growth Rate (CAGR) formula is modified to account for cases when beginning value (B) is negative by subtracting beginning value (B) and adding absolute value of beginning value(|B|) from ending value (E) in nominator and diving it by absolute value of beginning value(|B|).</p>
+ru,valuate,aboutLynchFormulaText,<p>Мы считаем справедливую стоимость акции по следующей версии формулы Питера Линча. Справедливая стоимость акции по Питеру Линчу = Темп роста прибыли (Net Income Growth Rate) * прибыль на акцию за последние 12 месяцев (EPS TTM, Earnings per Share Trailing Twelve Month). Темп роста прибыли (Net Income Growth Rate) - это рост показателя чистая прибыль (Net Income) за последние 5 лет, посчитанный, как совокупный среднегодовой темп роста (CAGR, Compound Annual Growth Rate) за соответствующий период.</p><p>Формула совокупного среднегодового темпа роста (CAGR, Compound Annual Growth Rate) модифицирована так, чтобы учитывать случаи когда начальное значение (B) отрицательное: для этого из конечного значения (E) вычитается начальное значение (B) и добавляется модуль начального значения (|B|) в числителе, в знаменателе при этом берется модуль начального значения (|B|).</p> 
+es,valuate,aboutLynchFormulaText,<p>Calculamos el valor justo de una acción usando la siguiente versión de la fórmula de Peter Lynch. Valor justo de una acción según Peter Lynch = Tasa de crecimiento del ingreso neto * Ganancias por acción de los últimos 12 meses (EPS TTM). La tasa de crecimiento del ingreso neto se calcula como la tasa de crecimiento anual compuesta (CAGR) durante los últimos 5 años.</p><p>La fórmula de CAGR se modifica para tener en cuenta casos en los que el valor inicial (B) es negativo, restando el valor inicial (B) y añadiendo el valor absoluto de B al valor final (E) en el numerador, y dividiéndolo por el valor absoluto del valor inicial (|B|).</p>
+en,valuate,growthRateCalcExplanation,<p>Net Income growth rate for 1, 3, 5 last years calculated as compound average growth rate (CAGR). The formula is modified to account for negative beginning and ending values.</p>
+ru,valuate,growthRateCalcExplanation,<p>Темпы роста чистой прибыли (Net Income) за 1, 3, 5 лет посчтитаны как совокупный среднегодовой темп роста (CAGR) за соответсвующие периоды. Формула модифицирована, чтобы учитывать отрицательные начальное и конечное значения.</p>
+es,valuate,growthRateCalcExplanation,<p>Las tasas de crecimiento de los ingresos netos para 1, 3 y 5 años se calculan como la tasa de crecimiento anual compuesta (TCAC) para los períodos correspondientes. La fórmula se modifica para tener en cuenta los valores iniciales y finales negativos.</p>
+en,valuate,pegExplanation,N/A
+ru,valuate,pegExplanation,Н/Д
+es,valuate,pegExplanation,N/A
+en,valuate,datapoints1,N/A
+ru,valuate,datapoints1,Н/Д
+es,valuate,datapoints1,N/A
+en,valuate,datapoints2,N/A
+ru,valuate,datapoints2,Н/Д
+es,valuate,datapoints2,N/A
+en,valuate,datapoints3,N/A
+ru,valuate,datapoints3,Н/Д
+es,valuate,datapoints3,N/A
+en,valuate,aboutFullNegativeCagr,N/A
+ru,valuate,aboutFullNegativeCagr,Н/Д
+es,valuate,aboutFullNegativeCagr,N/A
+en,valuate,noValuationExplanation,N/A
+ru,valuate,noValuationExplanation,Н/Д
+es,valuate,noValuationExplanation,N/A
+en,valuate,noPegExplanation,N/A
+ru,valuate,noPegExplanation,Н/Д
+es,valuate,noPegExplanation,N/A
+en,valuate,noFairPriceExplanation,N/A
+ru,valuate,noFairPriceExplanation,Н/Д
+es,valuate,noFairPriceExplanation,N/A

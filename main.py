@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import news, exchange, macro_data, countries, saveconsent, valuation, screener
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.inmemory import InMemoryBackend
+from routers import news, exchange, macro_data, countries, saveconsent, valuation, screener, language
 from contextlib import asynccontextmanager
 from db.session import init_db
 from jobs.macro_update import update
@@ -13,6 +15,7 @@ scheduler = BackgroundScheduler()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    FastAPICache.init(InMemoryBackend(), prefix="fastapi-cache")
     #scheduler.start()
     yield
 
@@ -40,6 +43,7 @@ app.include_router(countries.router, prefix="/countries")
 app.include_router(valuation.router,prefix="/valuation")
 app.include_router(screener.router, prefix="/screener")
 app.include_router(saveconsent.router, prefix="/saveconsent")
+app.include_router(language.router,prefix="/labels")
 
 from fastapi.routing import APIRoute
 
