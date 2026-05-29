@@ -155,12 +155,21 @@ def get_index_prices_from_moex(ticker:str, boardid:str, market: str) -> pd.DataF
         return df
 
 def get_price_from_moex(ticker:str) -> float:
+    board: str = "TQBR"
     with requests.Session() as session:
-        data = apimoex.get_board_history(session, ticker)
-        df = pd.DataFrame(data)
-        df = df.dropna()
-        df.set_index('TRADEDATE', inplace=True)
-        return float(df[df['BOARDID']=='TQBR'].iloc[-1]['CLOSE'])
+        data = apimoex.get_board_securities(
+            session,
+            table="marketdata",
+            columns=("SECID", "BOARDID", "TRADEDATE", "LAST", "CLOSE", "BID", "OFFER", "VOLUME"),
+            board=board,
+        )
+    df = pd.DataFrame(data)
+    df = df[df["SECID"] == ticker]
+    if df.empty:
+        raise ValueError(f"Не найден тикер {ticker} на борде {board}")
+    row = df.iloc[-1]
+    # LAST — последний торгуемый ценник, CLOSE — закрытие
+    return float(row["LAST"] if pd.notna(row.get("LAST")) else row["CLOSE"])
 
 def get_moex_stock_data(ticker:str) -> tuple:
     data = pd.read_csv('moex_data.csv')
