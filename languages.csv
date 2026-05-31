@@ -143,27 +143,36 @@ es,valuate,aboutLynchFormulaText,<p>Calculamos el valor justo de una acción usa
 en,valuate,growthRateCalcExplanation,<p>Net Income growth rate for 1, 3, 5 last years calculated as compound average growth rate (CAGR). The formula is modified to account for negative beginning and ending values.</p>
 ru,valuate,growthRateCalcExplanation,<p>Темпы роста чистой прибыли (Net Income) за 1, 3, 5 лет посчтитаны как совокупный среднегодовой темп роста (CAGR) за соответсвующие периоды. Формула модифицирована, чтобы учитывать отрицательные начальное и конечное значения.</p>
 es,valuate,growthRateCalcExplanation,<p>Las tasas de crecimiento de los ingresos netos para 1, 3 y 5 años se calculan como la tasa de crecimiento anual compuesta (TCAC) para los períodos correspondientes. La fórmula se modifica para tener en cuenta los valores iniciales y finales negativos.</p>
-en,valuate,pegExplanation,N/A
-ru,valuate,pegExplanation,Н/Д
-es,valuate,pegExplanation,N/A
-en,valuate,datapoints1,N/A
-ru,valuate,datapoints1,Н/Д
-es,valuate,datapoints1,N/A
-en,valuate,datapoints2,N/A
-ru,valuate,datapoints2,Н/Д
-es,valuate,datapoints2,N/A
-en,valuate,datapoints3,N/A
-ru,valuate,datapoints3,Н/Д
-es,valuate,datapoints3,N/A
-en,valuate,aboutFullNegativeCagr,N/A
-ru,valuate,aboutFullNegativeCagr,Н/Д
-es,valuate,aboutFullNegativeCagr,N/A
-en,valuate,noValuationExplanation,N/A
-ru,valuate,noValuationExplanation,Н/Д
-es,valuate,noValuationExplanation,N/A
-en,valuate,noPegExplanation,N/A
-ru,valuate,noPegExplanation,Н/Д
-es,valuate,noPegExplanation,N/A
-en,valuate,noFairPriceExplanation,N/A
-ru,valuate,noFairPriceExplanation,Н/Д
-es,valuate,noFairPriceExplanation,N/A
+en,valuate,pegExplanation,Price / Earnings per Share / Net Income Growth Rate (PEG) is calulated as Price divivded by Earnings per Share divided by the company's historical Net Income Growth Rate. If Net Income Growth Rate is more than 25%, we use 25% to calculate PEG ratio.
+ru,valuate,pegExplanation,Коэффициент Цена акции / Прибыль на акцию / Темп роста прибыли (PEG, Price / Earnings per Share / Net Income Growth Ratio) расчитывается как цена акции деленная на прибыль на акцию (Earnings per Share) деленная на темп роста прибыли. Если темп роста прибыли более 25%, мы используем 25% для расчета PEG.
+es,valuate,pegExplanation,El ratio Precio/Beneficio por Acción/Tasa de Crecimiento del Beneficio Neto (PEG) se calcula dividiendo el Precio entre el Beneficio por Acción y dividiendo el resultado entre la Tasa de Crecimiento del Beneficio Neto histórica de la empresa. Si la Tasa de Crecimiento del Beneficio Neto es superior al 25%, se utiliza este valor para calcular el ratio PEG.
+en,valuate,datapoints1,<b>Price</b> - close price of an asset from TradingView (updates when you open the page)
+ru,valuate,datapoints1,<b>Цена</b> - цена закрытия актива полученная от TradingView (обновляется при открытии страницы)
+es,valuate,datapoints1,<b>Precio</b> - precio de cierre de un activo en TradingView (se actualiza al abrir la página)
+en,valuate,datapoints2,<b>EPS TTM</b> - value from TradingView (updates when you open the page)
+ru,valuate,datapoints2,<b>Прибыль на акцию за последние 12 месяцев (EPS TTM)</b> - значение полученное от TradingView (обновляется при открытии страницы)
+es,valuate,datapoints2,<b>EPS TTM</b> - valor de TradingView (se actualiza al abrir la página)
+en,valuate,datapoints3,<b>Net Income Growth Rate</b> - value from SEC fillings (updates when yearly SEC fillings are submitted, usually in February-March)
+ru,valuate,datapoints3,<b>Темп роста чистой прибыли (Net Income Growth Rate)</b> - значение из отчетов SEC (обновляется при публикации годовых отчетов SEC, обычно в феврале-марте)
+es,valuate,datapoints3,<b>Tasa de crecimiento de los ingresos netos</b> - valor obtenido de los informes presentados ante la SEC (se actualiza cuando se presentan los informes anuales ante la SEC, generalmente en febrero-marzo)
+en,valuate,datapointsMoex1,<b>Price</b> - close price of an asset from MOEX API, is updated when you open the page.
+ru,valuate,datapointsMoex1,<b>Цена</b> - цена закрытия актива полученная от MOEX API, обновляется при открытии страницы.
+es,valuate,datapointsMoex1,<b>Precio</b> - precio de cierre de un activo de la API de MOEX, se actualiza cuando abres la página.
+en,valuate,datapointsMoex2,<b>EPS TTM</b> - value from the latest quarterly report, is updated every quarter when report is published.
+ru,valuate,datapointsMoex2,<b>Прибыль на акцию за последние 12 месяцев (EPS TTM)</b> - значение из последнего квартального отчета, обновляется каждый квартал при публикации отчета.
+es,valuate,datapointsMoex2,<b>EPS TTM</b> - valor del último informe trimestral, se actualiza cada trimestre cuando se publica el informe.
+en,valuate,datapointsMoex3,<b>Net Income Growth Rate</b> - value from the latest yearly report, is updated when yearly report is submitted, usually in February-March.
+ru,valuate,datapointsMoex3,<b>Темп роста чистой прибыли (Net Income Growth Rate)</b> - значение из годового отчета компании, обновляется при публикации годовых отчетов, обычно в феврале-марте.
+es,valuate,datapointsMoex3,<b>Tasa de crecimiento de los ingresos netos</b>: valor del último informe anual, se actualiza cuando se presenta el informe anual, normalmente en febrero-marzo.
+en,valuate,aboutFullNegativeCagr,<p>If ending (E) and beginning (B) values are negative or result of division is negative we take absolute value of division of ending by beginning value (|E/B|) and multiply result by -1.</p>
+ru,valuate,aboutFullNegativeCagr,<p>Если конечное (E) и начальное (B) значения отрицательные или результат деления отрицательный мы берем модуль деления конечного значения на начальное значениие (|E/B|) умножая полученное значение на -1.</p>
+es,valuate,aboutFullNegativeCagr,<p>Si los valores final (E) e inicial (B) son negativos o el resultado de la división es negativo, tomamos el valor absoluto de la división de E por B (|E/B|) y multiplicamos el resultado por -1.</p>
+en,valuate,noValuationExplanation,Peter Lynch's fair value formula is designed for growing companies with positive Earnings per Share Trailing Twelve Month (EPS TTM > 0) and a positive growth rate of net income (Net Income Growth Rate > 0). COMPANY_NAME (TICKER_ON_PAGE) has a negative or missing EPS TTM and/or negative or missing Net Income Growth Rate. Under these conditions, Peter Lynch's formula results in a negative fair value and loses economic meaning or can not be calculated at all.
+ru,valuate,noValuationExplanation,Формула справедливой стоимости Питера Линча рассчитана на растущие компании с положительной прибылью на акцию за последние 12 месяцев (EPS TTM > 0) и положительным темпом роста чистой прибыли (Net Icome Growth Rate > 0). У COMPANY_NAME (TICKER_ON_PAGE) значение прибыли на акцию  за последние 12 месяцев (EPS TTM) и/или темп роста прибыли (Net Icome Growth Rate) отрицательно либо отсутствует. При таких данных формула Питера Линча либо дает отрицательную справедливую цену и теряет экономический смысл либо вообще не может быть посчитана.
+es,valuate,noValuationExplanation,La fórmula de valor razonable de Peter Lynch está diseñada para empresas en crecimiento con ganancias por acción de los últimos doce meses (EPS TTM > 0) positivas y una tasa de crecimiento de ingresos netos positiva (Tasa de crecimiento de ingresos netos > 0). COMPANY_NAME (TICKER_ON_PAGE) tiene un EPS TTM negativo o faltante y/o una tasa de crecimiento de ingresos netos negativa o faltante. En estas condiciones, la fórmula de Peter Lynch resulta en un valor razonable negativo y pierde su significado económico o no puede calcularse en absoluto.
+en,valuate,noPegExplanation,PEG of stock COMPANY_NAME (TICKER_ON_PAGE) cannot be calculated based on Peter Lynch formula due to negative or missing Earnings per Share Trailing Twelve Month (EPS TTM) and/or Net Income Growth Rate over 5 years.
+ru,valuate,noPegExplanation,Коэффициент Цена акции / Прибыль на акцию / Темп роста прибыли (PEG) акции COMPANY_NAME (TICKER_ON_PAGE) не может быть рассчитан по формуле Питера Линча из-за отрицательной или отсутсвующей прибыли на акцию за последние 12 месяцев (EPS TTM) и/или темпа роста прибыли (Net Income Growth Rate) за 5 лет.
+es,valuate,noPegExplanation,El PEG de la acción COMPANY_NAME (TICKER_ON_PAGE) no se puede calcular según la fórmula de Peter Lynch debido a que las ganancias por acción de los últimos doce meses (EPS TTM) y/o la tasa de crecimiento de los ingresos netos durante 5 años son negativas o faltan.
+en,valuate,noFairPriceExplanation,Fair price of stock COMPANY_NAME (TICKER_ON_PAGE) cannot be calculated based on Peter Lynch formula due to negative or missing Earnings per Share Trailing Twelve Month (EPS TTM) and/or Net Income Growth Rate over 5 years.
+ru,valuate,noFairPriceExplanation,Справедливая цена акции COMPANY_NAME (TICKER_ON_PAGE) не может быть рассчитана по формуле Питера Линча из-за отрицательной или отсутствующей прибыли на акцию за последние 12 месяцев (EPS TTM) и/или темпа роста прибыли (Net Income Growth Rate) за 5 лет .
+es,valuate,noFairPriceExplanation,El precio justo de las acciones de COMPANY_NAME (TICKER_ON_PAGE) no se puede calcular según la fórmula de Peter Lynch debido a que las ganancias por acción de los últimos doce meses (EPS TTM) son negativas o faltan, y/o la tasa de crecimiento de los ingresos netos es menor durante 5 años.
