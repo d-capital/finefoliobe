@@ -4,6 +4,8 @@ from routers import news, exchange, macro_data, countries, saveconsent, valuatio
 from contextlib import asynccontextmanager
 from db.session import init_db
 from jobs.macro_update import update
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.inmemory import InMemoryBackend
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -13,6 +15,7 @@ scheduler = BackgroundScheduler()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    FastAPICache.init(InMemoryBackend())
     #scheduler.start()
     yield
 
