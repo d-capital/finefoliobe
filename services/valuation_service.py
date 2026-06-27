@@ -157,29 +157,36 @@ def get_index_prices_from_moex(ticker:str, boardid:str, market: str) -> pd.DataF
 def get_price_from_moex(ticker:str) -> float:
     board: str = "TQBR"
     price = 0
-    with requests.Session() as session:
-        data = apimoex.get_board_securities(
-            session,
-            table="marketdata",
-            columns=("SECID", "BOARDID", "TRADEDATE", "LAST", "CLOSE", "BID", "OFFER", "VOLUME"),
-            board=board,
-        )
-    df = pd.DataFrame(data)
-    df = df[df["SECID"] == ticker]
-    if df.empty:
-        raise ValueError(f"Не найден тикер {ticker} на борде {board}")
-    row = df.iloc[-1]
-    # LAST — последний торгуемый ценник, CLOSE — закрытие
-    if pd.notna(row.get("LAST")):
-        price = float(row["LAST"])  
-    else:
+    try:
         with requests.Session() as session:
-            data = apimoex.get_board_history(session, ticker)
-            df = pd.DataFrame(data)
-            df = df.dropna()
-            df.set_index('TRADEDATE', inplace=True)
-            price = float(df[df['BOARDID']==board].iloc[-1]['CLOSE'])
-    return price
+            data = apimoex.get_board_securities(
+                session,
+                table="marketdata",
+                columns=("SECID", "BOARDID", "TRADEDATE", "LAST", "CLOSE", "BID", "OFFER", "VOLUME"),
+                board=board,
+            )
+        df = pd.DataFrame(data)
+        df = df[df["SECID"] == ticker]
+        if df.empty:
+            raise ValueError(f"Не найден тикер {ticker} на борде {board}")
+        row = df.iloc[-1]
+        # LAST — последний торгуемый ценник, CLOSE — закрытие
+        if pd.notna(row.get("LAST")):
+            price = float(row["LAST"])  
+        else:
+            with requests.Session() as session:
+                data = apimoex.get_board_history(session, ticker)
+                df = pd.DataFrame(data)
+                df = df.dropna()
+                df.set_index('TRADEDATE', inplace=True)
+                price = float(df[df['BOARDID']==board].iloc[-1]['CLOSE'])
+        return price
+    except:
+        cached_prices = pd.read_csv('moex_cache.csv')
+        asset_price = cached_prices[cached_prices['Ticker']==ticker]
+        if len(asset_price)>0:
+            price = safe_float(asset_price.iloc[0]['Last_Close'])
+        return price
 
 def get_moex_stock_data(ticker:str) -> tuple:
     data = pd.read_csv('moex_data.csv')
@@ -216,26 +223,36 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
         if exchange == 'MOEX':
             df = get_moex_stock_data(ticker = ticker)
         else:
-            df = (
-                Query()
-                .select(
-                    "name",
-                    "description",
-                    "exchange",
-                    "close",
-                    "country",
-                    "market_cap_basic",
-                    "sector",
-                    "industry",
-                    "earnings_per_share_basic_ttm",
-                    "price_earnings_ttm",
-                    "dividends_yield",
-                    "free_cash_flow_fy",
-                    "debt_to_equity"
+            try:
+                df = (
+                    Query()
+                    .select(
+                        "name",
+                        "description",
+                        "exchange",
+                        "close",
+                        "country",
+                        "market_cap_basic",
+                        "sector",
+                        "industry",
+                        "earnings_per_share_basic_ttm",
+                        "price_earnings_ttm",
+                        "dividends_yield",
+                        "free_cash_flow_fy",
+                        "debt_to_equity"
+                    )
+                    .where(col("name") == ticker)
+                    .get_scanner_data()
                 )
-                .where(col("name") == ticker)
-                .get_scanner_data()
-            )
+            except:
+                cached_data = None
+                if exchange == 'NASDAQ':
+                    cached_data = pd.read_csv('nasdaq_cache.csv')
+                elif exchange == 'NYSE':
+                    cached_data = pd.read_csv('nyse_cache.csv')
+                asset_cached_data = cached_data[cached_data['name'] == ticker]
+                df = (1,asset_cached_data)
+                
         if len(df[1])>0:
             row = df[1].iloc[0]
 

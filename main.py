@@ -4,19 +4,24 @@ from routers import news, exchange, macro_data, countries, saveconsent, valuatio
 from contextlib import asynccontextmanager
 from db.session import init_db
 from jobs.macro_update import update
+from jobs.local_cache import cache_nyse_data, cache_nasdaq_data, cache_moex_data
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
+from pytz import timezone
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
 scheduler = BackgroundScheduler()
-#scheduler.add_job(update, 'interval', minutes=1)
+moscow_tz = timezone('Europe/Moscow')
+scheduler.add_job(cache_nasdaq_data, 'cron',hour=5,minute=0,timezone=moscow_tz,id='daily_5am_russia_nasdaq')
+scheduler.add_job(cache_nyse_data, 'cron',hour=5,minute=0,timezone=moscow_tz,id='daily_5am_russia_nyse')
+scheduler.add_job(cache_moex_data,  'cron',hour=5,minute=0,timezone=moscow_tz,id='daily_5am_russia_moex')
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
     FastAPICache.init(InMemoryBackend())
-    #scheduler.start()
+    scheduler.start()
     yield
 
 
