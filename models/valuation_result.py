@@ -40,4 +40,5 @@ class Valuation(BaseModel):
 class ValuationResult(BaseModel):
     stockInfo:StockInfo
     valuation: Optional[Valuation] = None
+    isPreviousDayData: Optional[bool] = False
     

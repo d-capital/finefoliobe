@@ -180,13 +180,13 @@ def get_price_from_moex(ticker:str) -> float:
                 df = df.dropna()
                 df.set_index('TRADEDATE', inplace=True)
                 price = float(df[df['BOARDID']==board].iloc[-1]['CLOSE'])
-        return price
+        return price,False
     except:
         cached_prices = pd.read_csv('moex_cache.csv')
         asset_price = cached_prices[cached_prices['Ticker']==ticker]
         if len(asset_price)>0:
             price = safe_float(asset_price.iloc[0]['Last_Close'])
-        return price
+        return price,True
 
 def get_moex_stock_data(ticker:str) -> tuple:
     data = pd.read_csv('moex_data.csv')
@@ -194,11 +194,13 @@ def get_moex_stock_data(ticker:str) -> tuple:
        'market_cap_basic', 'sector', 'industry',
        'earnings_per_share_basic_ttm', 'price_earnings_ttm', 'dividends_yield',
        'free_cash_flow_fy', 'debt_to_equity', 'sector_ru', 'industry_ru'])
+    price_result = get_price_from_moex(ticker=ticker)
+    isPreviousDayData = price_result[1]
     data = data[data["Ticker"]==ticker] 
     name = data.iloc[0]['Name']
     description = data.iloc[0]['Name']
     exchange = 'MOEX'
-    close = get_price_from_moex(ticker=ticker)
+    close = price_result[0]
     country = 'Russia'
     market_cap_basic = round(close * float(data.iloc[0]['Issue']),2)
     sector = data.iloc[0]['Sector']
@@ -214,17 +216,18 @@ def get_moex_stock_data(ticker:str) -> tuple:
     df.loc[len(df)] = [ticker, name, description, exchange, close, country, market_cap_basic, sector, industry, 
                        earnings_per_share_basic_ttm, price_earnings_ttm, dividends_yield, free_cash_flow_fy,
                        debt_to_equity, sector_ru, industry_ru]
-    return 1,df
+    return 1,df,isPreviousDayData
 
 def get_valuation(exchange:str, ticker: str) -> ValuationResult:
     stockInfo = None
+    isPreviousDayData = False
     if stockInfo is None:
         df = pd.DataFrame()
         if exchange == 'MOEX':
             df = get_moex_stock_data(ticker = ticker)
         else:
             try:
-                df = (
+                data = (
                     Query()
                     .select(
                         "name",
@@ -244,6 +247,7 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
                     .where(col("name") == ticker)
                     .get_scanner_data()
                 )
+                df = (1,data[1],False)
             except:
                 cached_data = None
                 if exchange == 'NASDAQ':
@@ -251,7 +255,8 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
                 elif exchange == 'NYSE':
                     cached_data = pd.read_csv('nyse_cache.csv')
                 asset_cached_data = cached_data[cached_data['name'] == ticker]
-                df = (1,asset_cached_data)
+                df = (1,asset_cached_data, True)
+                isPreviousDayData = True
                 
         if len(df[1])>0:
             row = df[1].iloc[0]
@@ -283,7 +288,7 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
                 if row["dividends_yield"] is not None
                 else None
             )
-
+            isPreviousDayData = df[2]
             netProfitHistory = get_net_income_from_file(ticker, exchange)
             print(ticker)
             if netProfitHistory is not None and len(netProfitHistory)>=2:
@@ -344,7 +349,7 @@ def get_valuation(exchange:str, ticker: str) -> ValuationResult:
                 avgGrowth=averageGrowth,
                 peg=peg
                 )
-            result  = ValuationResult(stockInfo=stockInfo, valuation=valuation)
+            result  = ValuationResult(stockInfo=stockInfo, valuation=valuation,isPreviousDayData=isPreviousDayData)
             return result
         else:
             return None
